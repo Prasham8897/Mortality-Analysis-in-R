@@ -10,15 +10,15 @@
   transition: 1s linear all;
   opacity: 0;
   }
-  
+
   .animate-enter.animate-enter-active {
   opacity: 1;
   }
-  
+
   .mapImage {
   width: 100%;
   }
-  
+
   .ranger {
   width: 500px;
   }
@@ -86,7 +86,7 @@
   * The starting map dateValue
   * @type {number}
   */
-  $scope.maxValue = 28;
+  $scope.maxValue = 6;
   /**
   * The ending map dateValue
   * @type {number}
@@ -96,7 +96,7 @@
   * url template for preloading images
   * @type {string}
   */
-  $scope.urlTemplate = $interpolate("choropleth_{{dateValue}}.png");
+  $scope.urlTemplate = $interpolate("c{{dateValue}}.png");
   /**
   * The map image URL being displayed
   * @type {string}
@@ -162,4 +162,3 @@
   </script>
   </body>
   </html>
-  

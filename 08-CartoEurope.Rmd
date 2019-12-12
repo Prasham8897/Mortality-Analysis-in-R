@@ -229,7 +229,7 @@ country_choropleth(data_2010_2015, title = "Choropleth: Number of Deaths between
 #setwd("~/numberOfDeathsAnimation")
 #choroplethr_animate(choropleths_death)
 
-#htmltools::includeHTML("~/numberOfDeathsAnimation/animated_choropleth.html")
+# htmltools::includeHTML("animated_choropleth1.html")
 
 ```
 
@@ -292,7 +292,7 @@ Lets see how that would look next and also if we can gain some interesting insig
 </p>
 
 ```{r, echo=FALSE, comment=NA, message=FALSE, warning=FALSE}
-htmltools::tags$iframe(title = "Embedded HTML", src = "./numberOfDeathsAnimation/animated_choropleth.html", height=500, width=800)
+htmltools::tags$iframe(title = "Embedded HTML", src = "animated_choropleth1.html", height=500, width=800)
 ```
 
 ```{r, fig.show='animate', dev='jpeg', ffmpeg.format='gif', echo=FALSE, comment=NA, message=FALSE, warning=FALSE}

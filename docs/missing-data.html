@@ -80,9 +80,10 @@
 <li class="chapter" data-level="2" data-path="data-and-information-sources.html"><a href="data-and-information-sources.html"><i class="fa fa-check"></i><b>2</b> Data and Information sources</a></li>
 <li class="chapter" data-level="3" data-path="missing-data.html"><a href="missing-data.html"><i class="fa fa-check"></i><b>3</b> Missing Data</a></li>
 <li class="chapter" data-level="4" data-path="cause-vs-age-sex.html"><a href="cause-vs-age-sex.html"><i class="fa fa-check"></i><b>4</b> Cause vs (Age &amp; Sex)</a></li>
-<li class="chapter" data-level="5" data-path="hale.html"><a href="hale.html"><i class="fa fa-check"></i><b>5</b> HALE</a></li>
+<li class="chapter" data-level="5" data-path="health-adjusted-life-expectancy-hale.html"><a href="health-adjusted-life-expectancy-hale.html"><i class="fa fa-check"></i><b>5</b> Health Adjusted Life Expectancy (HALE)</a></li>
 <li class="chapter" data-level="6" data-path="interactive-component.html"><a href="interactive-component.html"><i class="fa fa-check"></i><b>6</b> Interactive component</a></li>
 <li class="chapter" data-level="7" data-path="animation.html"><a href="animation.html"><i class="fa fa-check"></i><b>7</b> Animation</a></li>
+<li class="chapter" data-level="8" data-path="child-mortality-analysis.html"><a href="child-mortality-analysis.html"><i class="fa fa-check"></i><b>8</b> Child Mortality Analysis</a></li>
 <li class="divider"></li>
 <li><a href="https://github.com/rstudio/bookdown" target="blank">Published with bookdown</a></li>
 </ul>
@@ -104,15 +105,26 @@
             <section class="normal" id="section-">
 <div id="missing-data" class="section level1">
 <h1 number="3"><span class="header-section-number">3</span> Missing Data</h1>
-<p>I was reading this book - Enlightenment Now by Steven Pinker and came across this chapter on Health and mortality throughout the world. It had pretty interesting graphs depicting that the overall health of the world is becoming better and the people are living for a longer period of time.</p>
-<p>While working on this project, I opened this book again and read all the sources given under the graphs. I came across this website here - <a href="http://mortality.org" class="uri">http://mortality.org</a> and decided to use the data given here for understanding the number of deaths throughout the world.</p>
-<p>There were two main issues we faced here, firstly the data was not in one file, but it was spread across different text files. Each document had data about only one country. So we had to read the files seperately and then combine them into one database. Another issue was that we got data for only 41 countries here. Nevertheless we realised that this was good enough data to work with.</p>
-<p>Before we start working on the data we had to do a lot of data cleaning as mentioned earlier.
-After we parsed each file separately and combined it into one data, we also plotted a graph to do some missing data analysis.</p>
-<p>We realised that we have data on 41 countries acorss 268 years, but all the countries did not have data for all the years.</p>
-<p><img src="finalproj_files/figure-html/unnamed-chunk-2-1.png" width="672" /><img src="finalproj_files/figure-html/unnamed-chunk-2-2.png" width="672" /><img src="finalproj_files/figure-html/unnamed-chunk-2-3.png" width="672" /></p>
+<h3>
+Oh yes! We had missing data.
+<h3>
+<p>
+<p>I was reading this book - Enlightenment Now by Steven Pinker and came across this chapter on Health and mortality throughout the world. It had pretty interesting graphs depicting that the overall health of the world is becoming better and the people are living for a longer period of time.<br />
+</p>
+<p>While working on this project, I opened this book again and read all the sources given under the graphs. I came across this website here - <a href="http://mortality.org" class="uri">http://mortality.org</a> and decided to use the data given here for understanding the number of deaths throughout the world.<br />
+</p>
+<p>There were two main issues we faced here, firstly the data was not in one file, but it was spread across different text files. Each document had data about only one country. So we had to read the files seperately and then combine them into one database. Another issue was that we got data for only 41 countries here. Nevertheless we realised that this was good enough data to work with.<br />
+</p>
+<p>Before we start working on the data we had to do a lot of data cleaning as mentioned earlier.<br />
+After we parsed each file separately and combined it into one data, we also plotted a graph to do some missing data analysis.<br />
+</p>
+We realised that we have data on 41 countries acorss 268 years, but all the countries did not have data for all the years.
+</p>
+<img src="finalproj_files/figure-html/unnamed-chunk-2-1.png" width="672" /><img src="finalproj_files/figure-html/unnamed-chunk-2-2.png" width="672" /><img src="finalproj_files/figure-html/unnamed-chunk-2-3.png" width="672" />
+<p>
 <p>We can clearly see in the above graphs that most of the data relating to the countries is actually missing.</p>
-<p>One pattern that we noticed here is that there is more data on developed countries like the European countries, in comparison to the still developing countries.</p>
+One pattern that we noticed here is that there is more data on developed countries like the European countries, in comparison to the still developing countries.
+<p>
 
 </div>
             </section>
