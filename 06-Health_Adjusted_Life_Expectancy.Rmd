@@ -338,7 +338,9 @@ ggplotly(ggplot(d, aes(year, val)) +
   facet_wrap(~location,  ncol=1)+
   scale_x_continuous(name="Years", (breaks=seq(1990,2017,3))))
 
+```
 
+```{r echo=FALSE}
 ggplotly(ggplot(d1, aes(year, val)) + 
     geom_line() +
     ggtitle("Health Adjusted Life Expectancy") +
@@ -397,6 +399,5 @@ choroplethr_animate(choropleths)
 
 
 ```
-
-<iframe src="animated_choropleth.html" width="1200" height="2000"></iframe>
+<iframe src="animated_choropleth.html" width="750" height="500"></iframe>
 

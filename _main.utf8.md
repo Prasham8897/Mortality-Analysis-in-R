@@ -1,7 +1,7 @@
 --- 
 title: "Mortality Analysis"
 author: "Pritam Biswas | Manas Dresswala | Prasham Sheth | Swarna Bharati Mantena"
-date: "2019-12-11"
+date: "2019-12-12"
 site: bookdown::bookdown_site
 ---
 
@@ -116,11 +116,11 @@ HALE at birth ranged from a low of 51.1 years for African males to 70.5 years fo
 Below is the plot for the HALE values for the year of 2017. Hover over the points to see the country name. The plot is ordered in the decreasing order the HALE values.
 
 The best thing about the plot below is you can hover over the points to see the country names and also zoom in and out by drawing boxes! The plot has 195 so do take out the time to explore the values for as many as you could by zooming on various parts of the graph.
-preserve3728ab1db1f1d259
+preserve1deab37bc917660b
 After rank ordering the countries by the HALE values, we selected to create an animation for top 10 and last 10 countries for showing the transition intheir values over the period of years 1990 to 2017. 
 
 As we can see from them Japan and Singapore are 2 the places which have maintained their top positions. Andora, Sweden and Iceland inspite of increasing their respective values for HALE drop down in the positions. We think, availibility of better medical facilities along with the development in technology and easy adaptation in other countries as compared to that in these countries might have been the cause for the same. Also, we can see that the bottom most countries are the ones that are still developing ones and have less technological support available for helping them out through the medical situations. Thus, we can say that technological development does play an important role for helping us humans to survive more. 
-preserve8b4be853346c0629
+preservea15f3c4092ab98f7
 
 The below graph extends the above one in the sense that it has 40 countries into consideration (Top20 and bottom 20 when ranked based on the HALE values) The still graph with these many countries helps us see the fact that there is wide gap of 15 years when shifting from the 20th country from top to 20th country from bottom. 15 years! A big gap it is for sure...
 <img src="_main_files/figure-html/unnamed-chunk-5-1.png" width="1344" />
@@ -135,10 +135,10 @@ We need to study the different aspects for understanding why the pattern exists 
 ## Warning in RColorBrewer::brewer.pal(N, "Set2"): minimal value for n is 3, returning requested palette with 3 different levels
 ```
 
-preserve575d01913bd6e0c5
+preserve3a9fe919ba4ebdbb
 
 From the below drawn line and barcharts also it is a clear trend that the HALE values for females have been higher than the ones for males since 1990s and the trend has remained the same over the period of years.
-preserve0ac4f40f9ce1d1d4<img src="_main_files/figure-html/unnamed-chunk-7-2.png" width="672" />
+preserve35d9712cf1c65fb5<img src="_main_files/figure-html/unnamed-chunk-7-2.png" width="672" />
 Combining the trends for all countries we now show the plots for the values of HALE over the world chloropeth for the year 2017. We have seperated the choropleths into 3 components. 
 
 1- having average values of HALE for both the genders
@@ -182,13 +182,14 @@ The trend guages from these can be summarized as below.
 
 
 
-preserve9bd08b99fe947303preserve0d674bd462f21de5
+preserve6d31f9b72a626680
+
+preserve53babf6c5a4c2120
 
 Folowing graph show the change in HALE over different countries throughout the years from 1990 to 2017. The choropleth shows that the shades for each and every country are getting darker respectively for each country showing the overall increase in the value of HALE for each country.The color difference over the period of years for developed countries as compared to the ones which are classified as developing ones can show an insight for the amount of development that has been taking place in countries. 
 
 
-
-<iframe src="animated_choropleth.html" width="1200" height="2000"></iframe>
+<iframe src="animated_choropleth.html" style="position: absolute; height: 100%; border: none""></iframe>
 
 
 <!--chapter:end:06-Health_Adjusted_Life_Expectancy.Rmd-->

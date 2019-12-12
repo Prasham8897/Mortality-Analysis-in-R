@@ -1,7 +1,7 @@
 # Cause vs (Age & Sex)
 
 
-```{r , include=FALSE}
+```{r, echo=FALSE}
 
 library(ggplot2)
 library(rlist)
@@ -19,7 +19,7 @@ The plots and information stated corresponds to data collectced from the year 19
 </p>
 
 <h3>Reading data and forming dataframes</h3>
-```{r}
+```{r, echo=FALSE}
 ###CODE TO READ DATA FROM THE FILES
 #reading csv files into a dataframes and
 #preprocessing, forming proper datasets for plotting---------------------
@@ -98,7 +98,7 @@ data_noncomm_a$age <- factor(data_noncomm_a$age, levels = c("<1 year", "1-4 year
 <h3>Lets start plotting!</h3>
 
 
-```{r}
+```{r, echo=FALSE}
 #plot --- avg deaths vs age (all causes)
 death_numbers_2a = aggregate(val_mean ~ age, data=death_numbers_2, FUN=sum)
 
@@ -121,7 +121,7 @@ Why are the values as shown? What are the major causes of death? How do deaths d
 Let us take a look at the causes of deaths (mentioned in the dataset).
 </p>
 
-```{r}
+```{r, echo=FALSE}
 
 #Plot showing various causes of death
 df_big <- rbind(data_injuries3, data_comm_a, data_noncomm_a)
@@ -148,7 +148,7 @@ In this analysis, let us first check the deaths due to injuries of each age grou
 </p>
 
 <h3>Injuries</h3>
-```{r}
+```{r, echo=FALSE}
 
 injuries_death_numbers = aggregate(val_mean ~ age, data=data_injuries3, FUN=sum)
 
@@ -164,7 +164,7 @@ plot_ly(x = injuries_death_numbers$age, y = injuries_death_numbers$val_mean, typ
 <p>
 From this graph, we can see that more number of deaths due to injuries are in the 15-49 years age group. It seems a little natural that this number would be high because the width of this age group is high. Now, let us dive into what the specific causes were, under this subgroup of injuries.
 </p>
-```{r}
+```{r, echo=FALSE}
 
 plot_ly(data_injuries3, x = ~age, y = ~val_mean, color = ~cause, type = "bar")  %>% 
         layout(title="Avg. no. of deaths due to injuries vs Age", 
@@ -182,7 +182,7 @@ In all the age groups, the average number of deaths due to self-harm and interpe
 
 Following is a mosaic plot that gives the information of the same data in relative fashion. Here, we do not know the actual values by observing the plot alone. So, bar graph using plotly seem to be a better option than mosaic plots.  
 </p>
-```{r, fig.width=12, fig.height=8}
+```{r, echo=FALSE, fig.width=12, fig.height=8}
 
 data_injuries4 <- data_injuries3 %>% select(age, cause, val_mean)
 data_injuries4$val_mean <- as.integer(data_injuries4$val_mean) 
@@ -204,7 +204,7 @@ ggplot(data_injuries4) +
 
 
 <h3>Communicable, maternal, neonatal, and nutritional diseases</h3>
-```{r}
+```{r, echo=FALSE}
 
 communicable_death_numbers = aggregate(val_mean ~ age, data=data_comm_a, FUN=sum)
 
@@ -222,7 +222,7 @@ plot_ly(x = communicable_death_numbers$age, y = communicable_death_numbers$val_m
 From this graph, we can see that maximum average number of deaths in this category are in the age group of <1 year and the minimum average number of deaths are in the age group 4-15 years. Let us explore further on what this category of causes includes and how each of the causes is responsible for deaths. 
 </p>
 
-```{r}
+```{r, echo=FALSE}
 
 plot_ly(data_comm_a, x = ~age, y = ~val_mean, color = ~cause, type = "bar")  %>% 
         layout(title="Avg. no. of deaths due to communicable diseases vs Age", 
@@ -240,7 +240,7 @@ In the age group <1 year, the one cause that is responsible for maximum number o
 Again, following is the mosaic plot that gives us the information about the data in relative sense. Similar to the previous mosaic plot, we do not get to know the true values from mosaic plots. Also, as the set of boxes representing same cause do not start at the same point, it gets difficult to compare too. In addition, it also gets difficult as the number of causes increase. So, we will no longer check the mosaic plots for our graphs when the number of causes are high.
 </p>
 
-```{r, fig.width=12, fig.height=8}
+```{r, fig.width=12, fig.height=8, echo=FALSE}
 
 data_comm_b <- data_comm_a %>% select(age, cause, val_mean)
 data_comm_b$val_mean <- as.integer(data_comm_b$val_mean) 
@@ -261,7 +261,7 @@ ggplot(data_comm_b) +
 
 
 <h3>Non Communicable diseases</h3>
-```{r}
+```{r, echo=FALSE}
 
 non_communicable_death_numbers = aggregate(val_mean ~ age, data=data_noncomm_a, FUN=sum)
 
@@ -279,7 +279,7 @@ plot_ly(x = non_communicable_death_numbers$age, y = non_communicable_death_numbe
 The trend in the plot is similar to the trend in the first plot. The average number of deaths decrease till the 5-14 years age group and then increases. The increase observed is very steep. The average number of deaths in the age group 70+ years is more than the sum of the average number of deaths of all other age groups under this category of causes of deaths. Let us explore further on what were the main causes under this category. 
 </p>
 
-```{r}
+```{r, echo=FALSE}
 
 plot_ly(data_noncomm_a, x = ~age, y = ~val_mean, color = ~cause, type = "bar")  %>% 
         layout(title="Avg. no. of deaths due to non-communicable diseases vs Age", 
@@ -296,7 +296,7 @@ There seem to be less average number of deaths due to non-communicable diseases 
 </p>
 <h3>Let us now check the average number of deaths and causes based on sex.</h3>
 
-```{r}
+```{r, echo=FALSE}
 
 plot_ly(death_numbers_2, x = ~age, y = ~val_mean, color = ~sex, type = "bar")  %>% 
   layout(title="Avg. no. of deaths vs Age (by sex)", 
@@ -314,7 +314,7 @@ Comparing the two graphs above, we see that irrespective of the sex, the same pa
 It can also be observed from the graph that the average number of deaths in males was greater than the average number of deaths in females under all age groups considered except '70+ years' group. Let us explore the division on the average number of death based on sex.
 </p>
 
-```{r}
+```{r, echo=FALSE}
 
 death_numbers_2 <- death_numbers_2 %>% select(age, sex, val_mean)
 death_numbers_2$val_mean <- as.integer(death_numbers_2$val_mean) 
@@ -337,7 +337,7 @@ ggplot(death_numbers_2) +
 Here we come back to mosaic plots as it would be easy for comparisons. By looking at the graph we can easily compare the relative average number of deaths in males and females. But again, the accurate value is not known using mosaic plots. 
 </p>
 
-```{r}
+```{r, echo=FALSE}
 
 #DATA
 data_injuries_sex <- data_injuries2 %>%
@@ -357,7 +357,7 @@ data_noncomm_sex <- df_noncomm %>%
 
 ```
 
-```{r}
+```{r, echo=FALSE}
 
 #PLOT injuries
 plot_ly(data_injuries_sex, x = ~sex, y = ~val_mean, color = ~cause, type = "bar")  %>% 
@@ -374,7 +374,7 @@ plot_ly(data_injuries_sex, x = ~sex, y = ~val_mean, color = ~cause, type = "bar"
 This graph shows the average number of deaths of females and males by the causes of death under the injuries category. Overall, it can be observed that majority of the deaths were due to unintensional injuries. In all the three causes included in the graph, the average number of deaths of females is less than that of males. Deaths due to transport injuries are least among the three in case of females. 
 </p>
 
-```{r}
+```{r, echo=FALSE}
 
 #PLOT comm...
 plot_ly(data_comm_sex, x = ~sex, y = ~val_mean, color = ~cause, type = "bar")  %>% 
@@ -392,7 +392,7 @@ From this graph, we observe that the average number of deaths due to enteric inf
 Huge variation is observed in the average number of deaths due of maternal and neonatal disorders and due to respiratory infections and tuberculosis. In both cases, the average is more in males than that in females. In females, respiratory infections and tuberculosis causes the maximum average number of deaths in this category of deaths and in males, maternal and neonatal disorders cause the maximum average number of deaths. 
 </p>
 
-```{r}
+```{r, echo=FALSE}
 
 #PLOT non-communicable diseases
 plot_ly(data_noncomm_sex, x = ~sex, y = ~val_mean, color = ~cause, type = "bar")  %>% 

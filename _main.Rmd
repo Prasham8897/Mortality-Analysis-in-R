@@ -395,7 +395,9 @@ ggplotly(ggplot(d, aes(year, val)) +
   facet_wrap(~location,  ncol=1)+
   scale_x_continuous(name="Years", (breaks=seq(1990,2017,3))))
 
+```
 
+```{r echo=FALSE}
 ggplotly(ggplot(d1, aes(year, val)) + 
     geom_line() +
     ggtitle("Health Adjusted Life Expectancy") +
@@ -445,8 +447,8 @@ datalow$value<-datalow$breaks
 
 
 for (i in 1990:2017) {
-  df           = datalow %>% filter(year== i)
-  title        = paste0("Year: ",i)
+  df = datalow %>% filter(year== i)
+  title = paste0("Year: ",i)
   choropleths[[j]] = country_choropleth(df, title=title, num_colors = 5)
   j=j+1
 }
@@ -454,8 +456,7 @@ choroplethr_animate(choropleths)
 
 
 ```
-
-<iframe src="animated_choropleth.html" width="1200" height="2000"></iframe>
+<iframe src="animated_choropleth.html" style="position: absolute; height: 100%; border: none""></iframe>
 
 
 <!--chapter:end:06-Health_Adjusted_Life_Expectancy.Rmd-->
