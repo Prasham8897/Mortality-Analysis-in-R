@@ -266,11 +266,17 @@ Although we get the same insight as from the above graphs and that from looking 
 On looking up for what might be the reasons for females having higher HALE than male and referring to various articles, these were the reasons that might be the ones resulting into such results:
 
 1- The female advantage in life expectancy is partly, but not entirely driven by higher chances of surviving childhood.
-
-2- Biological differences can also be part of the story. 
-  The evidence shows that differences in chromosomes and hormones between men and women affect longevity. For example, males tend to have more fat surrounding the organs (they have more ‘visceral fat’) whereas women tend to have more fat sitting directly under the skin (‘subcutaneous fat’). This difference is determined both by estrogen and the presence of the second X chromosome in females; and it matters for longevity because fat surrounding the organs predicts cardiovascular disease
+  Accessible proof shows that youngster death rates in the present rich nations were higher for male than female babies in the nineteenth century, and the male inconvenience in child mortality became through the primary portion of the twentieth century, as wellbeing results improved. Essentially, maternal mortality in these nations used to be extremely high, and it diminished drastically over the twentieth century. Changes in child and maternal mortality do affect future contrasts among people, however, they can't completely clarify the ascent in the life span hole that we've seen in rich nations in the course of the only remaining century.
   
-3- 
+  
+2- Biological differences can also be part of the story. 
+  The proof shows that distinctions in chromosomes and hormones among people influence life span. For instance, males will, in general, have increasingly fat encompassing the organs (they have progressively 'visceral fat') though females will, in general, have increasingly fat sitting legitimately under the skin ('subcutaneous fat'). This distinction is resolved both by estrogen and the nearness of the second X chromosome in females, and it is important for life span since fat surrounding the organs predicts cardiovascular ailment
+  
+3- Freely of the definite weight, we realize that in any event part of the motivation behind why females live such a great amount of longer than men today, yet not before, has to do with the way that some key non-biological elements have changed. What are these evolving factors? Some are outstanding and moderately direct, similar to the way that men smoke all the more frequently. Others are increasingly confounded. For instance, new proof shows that in rich nations the female bit of leeway expanded to some degree on the grounds that irresistible sicknesses used to influence ladies excessively a century prior, so propels in medication that diminished the long haul wellbeing trouble from irresistible ailments, particularly for survivors, wound up raising ladies' life span lopsidedly.
+
+The proof is restricted and we just have fractional answers. We realize that natural, social and ecological factors all add to the way that females live longer than males; however, we don't know precisely how solid the overall commitment of every one of these variables is. We realize that the more drawn out life expectancy of females is basic in different creatures, yet it isn't universal. We likewise realize that organic, social and natural factors all add to the way that females live longer than males; yet we don't know precisely how solid the general commitment of every one of these components is.
+
+
 ```{r, echo=FALSE, message=FALSE, warning=FALSE, comment=FALSE, echo=FALSE}
 g <- list(
   showframe = FALSE,
