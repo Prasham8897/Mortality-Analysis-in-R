@@ -1,4 +1,5 @@
-## MORTALITY ANALYSIS #### EDAV Final Project 
+## MORTALITY ANALYSIS 
+#### EDAV Final Project
 
 The project aims at answering three most intersting questions related to mortality statistics that we could think of. 
 We explored the mortality statistics starting from child mortality, to the causes of death. We also included several visualizations that compare the mortality statistic across the countries, economy, income groups, age groups, and sex. 
