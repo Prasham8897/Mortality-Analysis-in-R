@@ -1,3 +1,4 @@
+book_filename: "finalproj"
 output_dir: docs
 delete_merged_file: true
 edit: https://github.com/Prasham8897/Mortality-Analysis/edit/master/%s
