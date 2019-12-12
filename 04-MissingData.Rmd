@@ -1,7 +1,5 @@
----
-title: "Missing Data Analysis"
-output: html_document
----
+#Missing Data
+
 
 ```{r, include=FALSE}
 library(ggplot2)
@@ -55,7 +53,7 @@ readData <- function(countryCode, x)
 {
   country = ""
   
-  path = paste("deaths/Deaths_1x1/",as.character(countryCode),".Deaths_1x1.txt", sep="")
+  path = paste("Deaths_1x1/",as.character(countryCode),".Deaths_1x1.txt", sep="")
   
   con <- file(path, "r")
   first_line <- readLines(con, n=1)
