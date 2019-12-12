@@ -399,5 +399,5 @@ choroplethr_animate(choropleths)
 
 
 ```
-<iframe src="animated_choropleth.html" width="750" height="500"></iframe>
+<iframe src="animated_choropleth.html" width="800" height="500"></iframe>
 
