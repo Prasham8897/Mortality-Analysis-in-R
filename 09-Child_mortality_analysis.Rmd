@@ -180,4 +180,3 @@ write.csv(df2, file = "mortality_d3_data_sample.csv", row.names=FALSE)
 
 ```
 Conclusion: There are severe disparities between death rates across the continents. Europe and North America fare signifcantly better than Africa and Asia. However from the time series we notice that the death rates are coming down in almost all the countries. This shows there is sigficantly more awareness about the current issues in society and actions are being taken to resolve them.
->>>>>>> 6eabdababff5329e72032f36ced4c22538bd890a:Child_mortality_analysis.Rmd
