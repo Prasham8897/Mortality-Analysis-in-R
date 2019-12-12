@@ -1,0 +1,1598 @@
+--- 
+title: "Mortality Analysis"
+author: "Pritam Biswas | Manas Dresswala | Prasham Sheth | Swarna Bharati Mantena"
+date: "`r Sys.Date()`"
+site: bookdown::bookdown_site
+---
+
+# Introduction
+
+<h1>DO YOU KNOW?</h1> 
+<p>
+The death rate is 7.7 deaths/1,000 population (2018 est.) on average across the world. This rate results in about 108 worldwide deaths per minute or 1.8 deaths every second. \
+
+Bulgaria has the highest death rate of 15.3 deaths/1,000 population and Qatar has the least death rate of 1.53 deaths/1,000 population. 
+</p>
+<h2>Does this little information bring up questions in your head?</h2>
+
+<h2>YES?</h2> 
+<p>
+It did for us too. These are some of the questions that we came up with: \
+What about the other countries? How many people die there on average? \
+How does the number of deaths vary across different countries?
+Do we see any pattern among deaths between developed and under-developed/developing countries? 
+What are the main causes of death? What are the statistics corresponding to this? \
+What about child mortality? How are the statistics in case of childeren (aged less than 5 years)? 
+How do the statistics vary in different age groups and on sex? 
+
+With a bunch of these questions that are quite interesting, we decided that this would be our project.
+</p>
+<h1>WHAT DO WE WANT TO DO?</h1> 
+
+We picked the three most interesting questions that struck our minds when we started exploring the data on this topic.
+
+<h2>The three interesting questions!</h2> 
+<p>
+a) Understand the child mortality accross the countries in the world. Is the child mortality count coming down? If yes, why did that happen? \
+
+b) We know that in today’s world there has been a tremendous advancement in healthcare. Does the life expectancy of a human increase now? Did the number of deaths actually come down because of that? Or is there any other reason for the mortality rate of a country? \
+
+c) Lastly, we would like to understand the mortality rates of people of different ages. Is there some difference in the causes of death? Are there any patterns here? Are there some differences in the causes of death when compared location wise? \
+
+Let us now get to other sections of this book that will help you understand better how we proceeded on working on this project.
+</p>
+
+<!--chapter:end:index.Rmd-->
+
+# Data and Information sources
+<p>
+We gathered data from multiple sources as we tried to answer a variety of questions in this project.
+Some of the data sources that we would be using are listed below - 
+\
+https://www.worlddata.info/life-expectancy.php\
+http://ghdx.healthdata.org/gbd-results-tool \
+http://ucdp.uu.se/downloads/ \
+https://www.prio.org/Data/Armed-Conflict/Battle-Deaths/The-Battle-Deaths-Dataset-version-30/ \
+https://www.mortality.org \
+https://population.un.org/wpp/Download/Standard/Mortality/ \
+\
+We tried to understand mortality not only through time but also across different countries. As we collected the data from different sources, they are in different formats. To overcome this, we performed some data cleaning and set the data collected in a proper format. 
+In addition to this, we did not find consistent data, meaning if through one source we get data for 10 years then in the other source we are getting data for 8 years. Data cleaning helped us overcome this problem too. 
+</p>
+\ \ \ \
+<p>
+A few facts and data mentioned in this report is from the following sources. \
+Information Resources: \
+https://www.cia.gov/library/publications/the-world-factbook/fields/346.html \
+https://www.worldatlas.com/articles/measuring-conflict-and-disease-the-top-global-mortality-rates.html \
+</p>
+
+<!--chapter:end:02-data.Rmd-->
+
+# Missing Data
+
+
+```{r, include=FALSE}
+library(ggplot2)
+library(maps)
+library(choroplethr)
+library(choroplethrMaps)
+library(ggmap)
+library(countrycode)
+
+library(visdat)
+library(naniar)
+
+library(plotly)
+
+library(gganimate)    # To realize the animation
+library(maptools)     # world boundaries coordinates
+library(viridis)      # for a nice color palette
+library(rgeos)
+
+library(tmaptools)
+library(countrycode)
+library(sf)             # spatial data classes
+library(rnaturalearth)  # world map data
+library(readxl)         # reading excel files
+library(dplyr)          # data manipulation
+library(tidyr)          # data manipulation
+library(purrr)          # data manipulation
+library(cartogram)      # cartograms creation
+library(tmap)           # maps creation
+```
+<h3>Oh yes! We had missing data.<h3>
+<p>
+I was reading this book - Enlightenment Now by Steven Pinker and came across this chapter on Health and mortality throughout the world. It had pretty interesting graphs depicting that the overall health of the world is becoming better and the people are living for a longer period of time. \
+
+While working on this project, I opened this book again and read all the sources given under the graphs. I came across this website here - <http://mortality.org> and decided to use the data given here for understanding the number of deaths throughout the world. \
+
+There were two main issues we faced here, firstly the data was not in one file, but it was spread across different text files. Each document had data about only one country. So we had to read the files seperately and then combine them into one database. Another issue was that we got data for only 41 countries here. Nevertheless we realised that this was good enough data to work with. \
+
+Before we start working on the data we had to do a lot of data cleaning as mentioned earlier. \
+After we parsed each file separately and combined it into one data, we also plotted a graph to do some missing data analysis. \
+
+We realised that we have data on 41 countries acorss 268 years, but all the countries did not have data for all the years. 
+</p>
+
+```{r, comment=NA, echo=FALSE, message=FALSE, warning=FALSE}
+
+result <- data.frame(Year = as.numeric(),
+                     Total = as.numeric(),
+                     Country = as.character())
+
+readData <- function(countryCode, x)
+{
+  country = ""
+  
+  path = paste("Deaths_1x1/",as.character(countryCode),".Deaths_1x1.txt", sep="")
+  
+  con <- file(path, "r")
+  first_line <- readLines(con, n=1)
+  close(con)
+  
+  temp <- strsplit(first_line, ",")
+  country1 <- temp[[1]][1]
+  if(country1 == 'The United States of America'){
+    country <- 'united states of america'
+  }
+  else{
+    country <- country1
+  }
+  
+  deaths = read.delim(path,sep = "")
+  #deaths
+  
+  deaths <- deaths[,1:5]
+  #deaths
+  
+  colnames(deaths) <- c("Year", "Age", "Female", "Male", "Total")
+  
+  
+  deaths <- deaths[-c(1),]
+  deaths <- deaths[deaths$Age == 0,]
+  deaths <- deaths[,-c(2,3,4)]
+  
+  deaths['ISO3'] <- countrycode(country, "country.name", "iso3c")
+  
+  deaths$Total <- as.numeric(as.character(deaths$Total))
+  deaths$Year <- as.numeric(as.character(deaths$Year))
+  
+  return (deaths)
+  #ggplot(deaths, aes(x = Year, y = Total, group = 1)) + 
+  #  geom_line(color="red")
+}
+countries <- c('AUT', 'BEL', 'BGR', 'BLR', 'CAN', 'CHE', 'CHL', 'CZE', 'DEUTNP', 'DNK', 'ESP', 'EST', 'FIN', 'FRATNP', 'GRC', 'HKG', 'HRV', 'HUN', 'IRL', 'ISL', 'ISR', 'ITA', 'LTU', 'LUX', 'LVA', 'NLD', 'NOR', 'NZL_NP', 'POL', 'PRT', 'RUS', 'SVK', 'SVN', 'SWE', 'TWN', 'UKR','GBR_NP', 'AUS', 'USA', 'JPN', 'KOR')
+
+for(i in countries){
+  df <- readData(i)
+  result <- rbind(result, df)
+}
+
+years <- unique(result$Year)
+
+years <- sort(years)
+
+temp <- data.frame("ISO3" = as.character(countries))
+
+#temp
+country_year = data.frame("ISO3" = as.character(), "Year" = as.numeric())
+
+for(i in 1:nrow(temp)) {
+  for(j in 1:length(years)){
+    x = data.frame("ISO3" = temp[i,],"Year" = years[j])
+    country_year = rbind(country_year, x)
+  }
+}
+
+#result
+
+finalDf <- merge(x = country_year, y = result, by = c("ISO3", "Year"), all=TRUE)
+
+#finalDf
+
+vis_dat(finalDf)
+
+vis_miss(finalDf)
+
+ggplot(finalDf, 
+       aes(x = Year, 
+           y = Total)) + 
+  geom_miss_point() +
+  facet_wrap(~ISO3) +
+  labs(x = "Year", y = "Number of Deaths")
+
+```
+<p>
+We can clearly see in the above graphs that most of the data relating to the countries is actually missing. 
+
+One pattern that we noticed here is that there is more data on developed countries like the European countries, in comparison to the still developing countries.
+<p>
+
+<!--chapter:end:03-MissingData.Rmd-->
+
+# Cause vs (Age & Sex)
+
+
+```{r, echo=FALSE}
+
+library(ggplot2)
+library(rlist)
+library(anchors)
+library(plyr)
+library(dplyr)
+library(plotly)
+library(ggmosaic)
+
+```
+<p>
+To understand the mortality rates of the people of different age groups, we downloaded datasets from the website http://ghdx.healthdata.org/gbd-results-tool and then plotted the basic plots relating the number of deaths to different age groups and sex. \
+As the ages were grouped this way in the actual dataset source, we preferred to take it this way. There is no particular reason for choosing unequal intervals of age. \
+The plots and information stated corresponds to data collectced from the year 1990 to 2016. Also, wherever average is mentioned, it is an average taken per annum from 1990 to 2017. 
+</p>
+
+<h3>Reading data and forming dataframes</h3>
+```{r, echo=FALSE}
+###CODE TO READ DATA FROM THE FILES
+#reading csv files into a dataframes and
+#preprocessing, forming proper datasets for plotting---------------------
+csv <- read.csv(file = 'total_all_causes.csv', header = TRUE)
+data_all <- as.data.frame(csv)
+
+
+#preprocessing and forming proper datasets for plotting------------------
+
+#--------------------------
+#over all data
+data_all_2 <- data_all[which(data_all$metric == 'Number'), ]
+data_all_2$age <- plyr::revalue(data_all_2$age, c("1 to 4"="1-4 years"))
+death_numbers_2 <- data_all_2 %>%
+                  group_by(age, sex) %>%
+                  dplyr::summarise(val_sum=sum(val),
+                                   val_mean=(mean(val)))
+death_numbers_2$age <- factor(death_numbers_2$age, levels = c("<1 year", "1-4 years", "5-14 years", "15-49 years", "50-69 years", "70+ years"))
+
+#--------------------------
+#injuries
+csv3 <- read.csv(file = 'injuries.csv', header = TRUE)
+data_injuries <- as.data.frame(csv3)
+data_injuries2 <- data_injuries[which(data_injuries$metric == 'Number'), ]
+
+data_injuries2$age <- plyr::revalue(data_injuries2$age, c("1 to 4"="1-4 years"))
+
+data_injuries3 <- data_injuries2 %>%
+                  group_by(age, cause) %>%
+                  dplyr::summarise(val_sum=sum(val),
+                                   val_mean=(mean(val)))
+data_injuries3$age <- factor(data_injuries3$age, levels = c("<1 year", "1-4 years", "5-14 years", "15-49 years", "50-69 years", "70+ years"))
+
+#---------------------------
+#Deatsh due to communicable diseases
+csv4 <- read.csv(file = 'communicable-1.csv', header = TRUE)
+csv5 <- read.csv(file = 'communicable-2.csv', header = TRUE)
+df4 <- as.data.frame(csv4)
+df5 <- as.data.frame(csv5)
+df4 <- df4[which(df4$metric == 'Number'), ]
+df5 <- df5[which(df5$metric == 'Number'), ]
+df_comm <- rbind(df4, df5)
+
+df_comm$age <- plyr::revalue(df_comm$age, c("1 to 4"="1-4 years"))
+
+data_comm_a <- df_comm %>%
+                  group_by(age, cause) %>%
+                  dplyr::summarise(val_sum=sum(val),
+                                   val_mean=(mean(val)))
+data_comm_a$age <- factor(data_comm_a$age, levels = c("<1 year", "1-4 years", "5-14 years", "15-49 years", "50-69 years", "70+ years"))
+
+#---------------------------
+#Deatsh due to communicable diseases
+csv6 <- read.csv(file = 'non_communicable-1.csv', header = TRUE)
+csv7 <- read.csv(file = 'non_communicable-2.csv', header = TRUE)
+csv8 <- read.csv(file = 'non_communicable-3.csv', header = TRUE)
+df6 <- as.data.frame(csv6)
+df6 <- df6[which(df6$metric == 'Number'), ]
+df7 <- as.data.frame(csv7)
+df7 <- df7[which(df7$metric == 'Number'), ]
+df8 <- as.data.frame(csv8)
+df8 <- df8[which(df8$metric == 'Number'), ]
+df_noncomm <- rbind(df6, df7, df8)
+
+df_noncomm$age <- plyr::revalue(df_noncomm$age, c("1 to 4"="1-4 years"))
+
+data_noncomm_a <- df_noncomm %>%
+                  group_by(age, cause) %>%
+                  dplyr::summarise(val_sum=sum(val),
+                                   val_mean=(mean(val)))
+data_noncomm_a$age <- factor(data_noncomm_a$age, levels = c("<1 year", "1-4 years", "5-14 years", "15-49 years", "50-69 years", "70+ years"))
+
+
+```
+
+<h3>Lets start plotting!</h3>
+
+
+```{r, echo=FALSE}
+#plot --- avg deaths vs age (all causes)
+death_numbers_2a = aggregate(val_mean ~ age, data=death_numbers_2, FUN=sum)
+
+plot_ly(x = death_numbers_2a$age, y = death_numbers_2a$val_mean, type = "bar") %>% 
+  layout(title = "Avg. no. of deaths vs Age group",
+         xaxis = list(title = "Age Groups",
+                      zeroline = FALSE),
+         yaxis = list(title = "Avg. no. of deaths",
+                      zeroline = FALSE),
+         font=list(family="Times New Roman", size=12))
+
+```
+
+<p>
+From the plot, we see that the average number of deaths in the age group 70+ years is maximum and the average number of deaths in the age group 5-14 years is minimum. Also, it is interesting to see that the average number of deaths in the age groups 1-4 and 5-14 are less that the average number of deaths in age groups <1 year and 15-49 years. Overall, the average number of deaths decrease till 5-14 years age group and then increases. \
+Why are the values as shown? What are the major causes of death? How do deaths due to various causes vary with age? These are the questions we wish to answer on further exploring and visualizing the dataset. \
+</p>
+
+<p>
+Let us take a look at the causes of deaths (mentioned in the dataset).
+</p>
+
+```{r, echo=FALSE}
+
+#Plot showing various causes of death
+df_big <- rbind(data_injuries3, data_comm_a, data_noncomm_a)
+df_big = aggregate(val_mean ~ cause, data=df_big, FUN=sum)
+
+#df_big$cause <- factor(data$cause, levels = unique(data$cause)[order(data$val_mean, decreasing = TRUE)])
+df_big <- df_big[order(df_big$val_mean),]
+
+plot_ly(df_big, x = ~val_mean, y = ~cause, type = "bar")  %>% 
+        layout(title="Causes of death vs Average nunber of deaths", 
+               xaxis = list(title = "Average number of deaths",
+                            zeroline = FALSE, family = "times new roman"),
+               yaxis = list(title = "Causes of death",
+                            zeroline = FALSE, family = "times new roman",
+                            categoryorder = "array", categoryarray = df_big$cause),
+               font=list(family="Times New Roman", size=12))
+
+```
+<p>
+This plot shows the causes of deaths vs average number of deaths. As we see, mental disorders cause the least number of deaths while cardiovascular diseases cause the maximum number of deaths. \
+The causes of death can be divided into three categories as follows: 1. injuries, 2. Communicable, maternal, neonatal, and nutritional diseases, and 3. Non-communicable diseases. Let us compare the number of deaths caused by each of these categories for the age groups.\
+
+In this analysis, let us first check the deaths due to injuries of each age group. 
+</p>
+
+<h3>Injuries</h3>
+```{r, echo=FALSE}
+
+injuries_death_numbers = aggregate(val_mean ~ age, data=data_injuries3, FUN=sum)
+
+plot_ly(x = injuries_death_numbers$age, y = injuries_death_numbers$val_mean, type = "bar") %>% 
+        layout(title = "Avg. no. of deaths due to injuries vs Age group",
+               xaxis = list(title = "Age Groups",
+                            zeroline = FALSE),
+               yaxis = list(title = "Avg. no. of deaths due to injuries",
+                            zeroline = FALSE),
+               font=list(family="Times New Roman", size=12))
+
+```
+<p>
+From this graph, we can see that more number of deaths due to injuries are in the 15-49 years age group. It seems a little natural that this number would be high because the width of this age group is high. Now, let us dive into what the specific causes were, under this subgroup of injuries.
+</p>
+```{r, echo=FALSE}
+
+plot_ly(data_injuries3, x = ~age, y = ~val_mean, color = ~cause, type = "bar")  %>% 
+        layout(title="Avg. no. of deaths due to injuries vs Age", 
+               xaxis = list(title = "Age Groups",
+                            zeroline = FALSE),
+               yaxis = list(title = "Avg. no. of deaths due to injuries",
+                            zeroline = FALSE),
+               font=list(family="Times New Roman", size=12))
+    
+```
+<p>
+This plot reveals a lot of information. Check the first three age groups. The people in these age groups and this category of causes of death (injuries) mostly died because of unintentional injuries. The common unintensional injuries include drowning, falls, poisoning, etc. As kids do not know how to handle the situations at their age, there are more chances of them losing life due to unintentional injuries as shown in the plot. Also, self-harm and interpersonal violence are very less in these three age groups. I think one of the most important reason for that is that people usually remain carefree during this age. They usually do not have any real life worries in life. \
+In contrast, the number of deaths due to self-harm and interpersonal violence is most in the age group of 15-49 years (middle-age group). The stress levels are pretty high in this age group. The reasons can be many ranging from financial problems to heart breaks. \
+In all the age groups, the average number of deaths due to self-harm and interpersoanl violence is less than the other two causes except for the age group 15-49 years. \
+
+Following is a mosaic plot that gives the information of the same data in relative fashion. Here, we do not know the actual values by observing the plot alone. So, bar graph using plotly seem to be a better option than mosaic plots.  
+</p>
+```{r, echo=FALSE, fig.width=12, fig.height=8}
+library(dplyr)
+
+data_injuries4 <- data_injuries3 %>% dplyr::select(age, cause, val_mean)
+data_injuries4$val_mean <- as.integer(data_injuries4$val_mean) 
+colnames(data_injuries4) <- c("age", "cause", "Freq")
+
+ggplot(data_injuries4) + 
+  geom_mosaic(
+    aes(x=product(cause, age), # cut from right to left 
+        weight=Freq,
+        fill=cause
+        ),
+    divider=c("vspine" , "hspine") # equivalent to divider=ddecker()
+  )  +
+  ggtitle("Mosaic plot") +
+  xlab("Age groups") + ylab("Causes (in injuries category)")
+
+```
+
+
+
+<h3>Communicable, maternal, neonatal, and nutritional diseases</h3>
+```{r, echo=FALSE}
+
+communicable_death_numbers = aggregate(val_mean ~ age, data=data_comm_a, FUN=sum)
+
+plot_ly(x = communicable_death_numbers$age, y = communicable_death_numbers$val_mean, type = "bar") %>% 
+        layout(title = "Avg. no. of deaths due to communicable diseases vs Age group",
+               xaxis = list(title = "Age Groups",
+                            zeroline = FALSE),
+               yaxis = list(title = "Avg. no. of deaths due to communicable diseases",
+                            zeroline = FALSE),
+               font=list(family="Times New Roman", size=12))
+
+```
+
+<p>
+From this graph, we can see that maximum average number of deaths in this category are in the age group of <1 year and the minimum average number of deaths are in the age group 4-15 years. Let us explore further on what this category of causes includes and how each of the causes is responsible for deaths. 
+</p>
+
+```{r, echo=FALSE}
+
+plot_ly(data_comm_a, x = ~age, y = ~val_mean, color = ~cause, type = "bar")  %>% 
+        layout(title="Avg. no. of deaths due to communicable diseases vs Age", 
+               xaxis = list(title = "Age Groups",
+                            zeroline = FALSE, family = "times new roman"),
+               yaxis = list(title = "Avg. no. of deaths communicable diseases",
+                            zeroline = FALSE, family = "times new roman"),
+               font=list(family="Times New Roman", size=12))
+    
+```
+
+<p>
+In the age group <1 year, the one cause that is responsible for maximum number of deaths is 'Maternal and neonatal disorders'. This cause is prominnant only inn two age groups <1 year and 15-49 years. In all other age groups, the average number of deaths due to this is negligible. The age group 15-49 has the maximum average number of deaths dur to 'HIV/AIDS and sexually transmitted infections'. In all the age groups, 'Respiratory infections and tuberculosis' seems to be one the main reasons of deaths under this category causes of deaths. \
+
+Again, following is the mosaic plot that gives us the information about the data in relative sense. Similar to the previous mosaic plot, we do not get to know the true values from mosaic plots. Also, as the set of boxes representing same cause do not start at the same point, it gets difficult to compare too. In addition, it also gets difficult as the number of causes increase. So, we will no longer check the mosaic plots for our graphs when the number of causes are high.
+</p>
+
+```{r, fig.width=12, fig.height=8, echo=FALSE}
+
+data_comm_b <- data_comm_a %>% dplyr::select(age, cause, val_mean)
+data_comm_b$val_mean <- as.integer(data_comm_b$val_mean) 
+colnames(data_comm_b) <- c("age", "cause", "Freq")
+
+ggplot(data_comm_b) + 
+  geom_mosaic(
+    aes(x=product(cause, age), # cut from right to left 
+        weight=Freq,
+        fill=cause
+        ),
+    divider=c("vspine" , "hspine") # equivalent to divider=ddecker()
+  ) +
+  ggtitle("Mosaic plot") +
+  xlab("Age groups") + ylab("Causes \n (in Communicable, maternal, neonatal, and nutritional diseases category)")
+
+```
+
+
+<h3>Non Communicable diseases</h3>
+```{r, echo=FALSE}
+
+non_communicable_death_numbers = aggregate(val_mean ~ age, data=data_noncomm_a, FUN=sum)
+
+plot_ly(x = non_communicable_death_numbers$age, y = non_communicable_death_numbers$val_mean, type = "bar") %>% 
+        layout(title = "Avg. no. of deaths due to non-communicable diseases vs Age group",
+               xaxis = list(title = "Age Groups",
+                            zeroline = FALSE),
+               yaxis = list(title = "Avg. no. of deaths due to non-communicable diseases",
+                            zeroline = FALSE),
+               font=list(family="Times New Roman", size=12))
+
+```
+
+<p>
+The trend in the plot is similar to the trend in the first plot. The average number of deaths decrease till the 5-14 years age group and then increases. The increase observed is very steep. The average number of deaths in the age group 70+ years is more than the sum of the average number of deaths of all other age groups under this category of causes of deaths. Let us explore further on what were the main causes under this category. 
+</p>
+
+```{r, echo=FALSE}
+
+plot_ly(data_noncomm_a, x = ~age, y = ~val_mean, color = ~cause, type = "bar")  %>% 
+        layout(title="Avg. no. of deaths due to non-communicable diseases vs Age", 
+               xaxis = list(title = "Age Groups",
+                            zeroline = FALSE, family = "times new roman"),
+               yaxis = list(title = "Avg. no. of deaths non-communicable diseases",
+                            zeroline = FALSE, family = "times new roman"),
+               font=list(family="Times New Roman", size=12))
+    
+```
+
+<p>
+There seem to be less average number of deaths due to non-communicable diseases in the three age groups <1 year, 1-4 years, and 5-14 years. Cardiovascular diseases and Neoplasms are the two main non-communicale diseases that have recoded maximum average number of deaths in this category of causes of deaths.
+</p>
+<h3>Let us now check the average number of deaths and causes based on sex.</h3>
+
+```{r, echo=FALSE}
+
+plot_ly(death_numbers_2, x = ~age, y = ~val_mean, color = ~sex, type = "bar")  %>% 
+  layout(title="Avg. no. of deaths vs Age (by sex)", 
+         xaxis = list(title = "Age Groups",
+                      zeroline = FALSE),
+         yaxis = list(title = "Avg. no. of deaths",
+                      zeroline = FALSE),
+         font=list(family="Times New Roman", size=12))
+    
+```
+
+<p>
+Comparing the two graphs above, we see that irrespective of the sex, the same pattern of decrese in the average number of deaths till 5-14 years age group and then increase till 70+ years age group is observed.\
+
+It can also be observed from the graph that the average number of deaths in males was greater than the average number of deaths in females under all age groups considered except '70+ years' group. Let us explore the division on the average number of death based on sex.
+</p>
+
+```{r, echo=FALSE}
+
+death_numbers_2 <- death_numbers_2 %>% dplyr::select(age, sex, val_mean)
+death_numbers_2$val_mean <- as.integer(death_numbers_2$val_mean) 
+colnames(death_numbers_2) <- c("age", "sex", "Freq")
+
+ggplot(death_numbers_2) + 
+  geom_mosaic(
+    aes(x=product(sex, age), # cut from right to left 
+        weight=Freq,
+        fill=sex
+        ),
+    divider=c("vspine" , "hspine") # equivalent to divider=ddecker()
+  ) +
+  ggtitle("Mosaic plot") +
+  xlab("Age groups") + ylab("Sex")
+
+```
+
+<p>
+Here we come back to mosaic plots as it would be easy for comparisons. By looking at the graph we can easily compare the relative average number of deaths in males and females. But again, the accurate value is not known using mosaic plots. 
+</p>
+
+```{r, echo=FALSE}
+
+#DATA
+data_injuries_sex <- data_injuries2 %>%
+                  group_by(sex, cause) %>%
+                  dplyr::summarise(val_sum=sum(val),
+                                   val_mean=(mean(val)))
+
+data_comm_sex <- df_comm %>%
+                  group_by(sex, cause) %>%
+                  dplyr::summarise(val_sum=sum(val),
+                                   val_mean=(mean(val)))
+
+data_noncomm_sex <- df_noncomm %>%
+                  group_by(sex, cause) %>%
+                  dplyr::summarise(val_sum=sum(val),
+                                   val_mean=(mean(val)))
+
+```
+
+```{r, echo=FALSE}
+
+#PLOT injuries
+plot_ly(data_injuries_sex, x = ~sex, y = ~val_mean, color = ~cause, type = "bar")  %>% 
+  layout(title="Avg. no. of deaths vs Sex (by Injuries)", 
+           xaxis = list(title = "Sex",
+                      zeroline = FALSE),
+         yaxis = list(title = "Avg. no. of deaths",
+                      zeroline = FALSE),
+         font=list(family="Times New Roman", size=12))
+    
+```
+
+<p>
+This graph shows the average number of deaths of females and males by the causes of death under the injuries category. Overall, it can be observed that majority of the deaths were due to unintensional injuries. In all the three causes included in the graph, the average number of deaths of females is less than that of males. Deaths due to transport injuries are least among the three in case of females. 
+</p>
+
+```{r, echo=FALSE}
+
+#PLOT comm...
+plot_ly(data_comm_sex, x = ~sex, y = ~val_mean, color = ~cause, type = "bar")  %>% 
+  layout(title="Avg. no. of deaths vs Sex \n (by communicable, maternal, neonatal, and nutritional diseases)", 
+           xaxis = list(title = "Sex",
+                      zeroline = FALSE),
+         yaxis = list(title = "Avg. no. of deaths",
+                      zeroline = FALSE),
+         font=list(family="Times New Roman", size=12))
+    
+```
+
+<p>
+From this graph, we observe that the average number of deaths due to enteric infections, HIV/AIDS nad sexually transmitted infections, neglected tropical diseases and malaria, nutritional deficiencies, and other infectious diseases is almost equal in case of females and males. \
+Huge variation is observed in the average number of deaths due of maternal and neonatal disorders and due to respiratory infections and tuberculosis. In both cases, the average is more in males than that in females. In females, respiratory infections and tuberculosis causes the maximum average number of deaths in this category of deaths and in males, maternal and neonatal disorders cause the maximum average number of deaths. 
+</p>
+
+```{r, echo=FALSE}
+
+#PLOT non-communicable diseases
+plot_ly(data_noncomm_sex, x = ~sex, y = ~val_mean, color = ~cause, type = "bar")  %>% 
+  layout(title="Avg. no. of deaths vs Sex (by non-communicable diseases)", 
+           xaxis = list(title = "Sex",
+                      zeroline = FALSE),
+         yaxis = list(title = "Avg. no. of deaths",
+                      zeroline = FALSE),
+         font=list(family="Times New Roman", size=12))
+    
+```
+
+<p>
+In the category of non-communicable diseases, the average number of deaths due to diabetes is approximately equal in both females and males. Cardiovascular diseases and neoplasms (cancer) are the top two cause of death in both males and females under this category of causes of death. Both these have higher count in males than in females. The only disease that caused significantly higher deaths in females than in males under this category of causes of death is neurological disorders. \
+\
+NOTE: We tried to include cleaveland dot plot / scatter plot, but felt that including bar charts is a better choice on comparing them because of the ease of comparison of values in the bar charts. 
+</p>
+
+<!--chapter:end:04-cause_age_sex.Rmd-->
+
+# Health Adjusted Life Expectancy (HALE)
+
+```{r, include=FALSE}
+
+library(ggplot2)
+library(plotly)
+library(gganimate)
+library(rworldmap)
+library(choroplethr)
+library(dplyr)
+library(tidyverse)
+
+```
+
+
+
+
+<h3>One important method of assessing the health of a population is to ask how long people can expect to live. </h3>
+
+<p>
+Life expectancy, estimate of the average number of additional years that a person of a given age can expect to live. The most common measure of life expectancy is life expectancy at birth. Life expectancy is a hypothetical measure. It assumes that the age-specific death rates for the year in question will apply throughout the lifetime of individuals born in that year. The estimate, in effect, projects the age-specific mortality (death) rates for a given period over the entire lifetime of the population born (or alive) during that time. The measure differs considerably by sex, age, race, and geographic location. Therefore, life expectancy is commonly given for specific categories, rather than for the population in general. \
+
+Life expectancy reflects local conditions. In less-developed countries, life expectancy at birth is relatively low, compared with more-developed countries. In some less-developed countries, life expectancy at birth may be lower than life expectancy at age 1, because of high infant mortality rates (commonly due to infectious disease or lack of access to a clean water supply). \
+
+Life expectancy is calculated by constructing a life table. A life table incorporates data on age-specific death rates for the population in question, which requires enumeration data for the number of people, and the number of deaths at each age for that population. Those numbers typically are derived from national census and vital statistics data, and from them the average life expectancy for each of the age groups within the population can be calculated. \
+</p>
+<p>
+A life table is a table which shows, for a person at each age, what the probability is of them dying before their next birthday. From this starting point, a number of statistics can be derived and are also included in the table: \
+
+- the probability of surviving any particular year of age \
+- the remaining life expectancy for people at each age \
+- the proportion of the original birth cohort still alive. \
+Life tables are usually constructed separately for men and for women because of their substantially different mortality rates. The Office of National Statistics is one organisation which produces life tables. \
+
+Health expectancy measures such as health-adjusted life expectancy (HALE) combine life expectancy (LE) with a measure of health-related quality of life (HRQL) or disability to create an indicator for assessing the combined effects of health and mortality, which is expressed in an intuitive measure similar to that of life expectancy [3]. Furthermore, in populations where life expectancy is increasing, health expectancies can be used to monitor whether the proportion of life spent in health is increasing (compression of morbidity) or decreasing (expansion of morbidity) due to a particular health problem such as insufficient or excess body weight. \
+</p>
+
+<h2>Health Adjusted Life Expectancy (HALE):</h2> \
+<p>
+HALE is a measure of population health that takes into account mortality and morbidity. It adjusts overall life expectancy by the amount of time lived in less than perfect health. This is calculated by subtracting from the life expectancy a figure which is the number of years lived with disability multiplied by a weighting to represent the effect of the disability.\
+
+If: \ \ 
+
+A = years lived healthily \
+B = years lived with disability \ \
+
+A+B = life expectancy \
+
+A+fB = healthy life expectancy, where f is a weighting to reflect disability level. \
+</p>
+
+<p>
+Healthy life expectancy (HALE) is a form of health expectancy that applies disability weights to health states to compute the equivalent number of years of good health that a newborn can expect. \
+
+Overall, global HALE at birth in 2015 for males and females combined was 63.1 years, 8.3 years lower than total life expectancy at birth. In other words, poor health resulted in a loss of nearly 8 years of healthy life, on average globally. Global HALE at birth for females was only 3 years greater than that for males. In comparison, female life expectancy at birth was almost 5 years higher than that for males. \
+
+HALE at birth ranged from a low of 51.1 years for African males to 70.5 years for females in the WHO European Region. The equivalent “lost” healthy years (LHE = total life expectancy minus HALE) ranged from 13% of total life expectancy at birth in the WHO African Region to 10% the WHO Western Pacific Region \ \ 
+
+
+("`https://www.healthknowledge.org.uk/e-learning/health-information/population-health-specialists/lifetables-hales-dalys-pylls#:~:targetText=Health%20Adjusted%20Life%20Expectancy%20(HALE,in%20less%20than%20perfect%20health.`")
+
+("https://www.britannica.com/science/life-expectancy")
+
+("https://www.who.int/gho/mortality_burden_disease/life_tables/hale_text/en/")
+
+</p>
+
+
+```{r, echo=FALSE}
+Data_country_years <- read.csv(file="IHME-GBD_2017_DATA-country.csv", header=TRUE, sep=",")
+Data_2017 <- read.csv(file="IHME-GBD_2017_DATA-c482ed82-1.csv", header=TRUE, sep=",")
+Data_global_years <- read.csv(file="IHME-GBD_2017_DATA-7725bb0c-1.csv", header=TRUE, sep=",")
+
+```
+
+<p>
+Below is the plot for the HALE values for the year of 2017. Hover over the points to see the country name. The plot is ordered in the decreasing order the HALE values. \
+
+The best thing about the plot below is you can hover over the points to see the country names and also zoom in and out by drawing boxes! The plot has 195 so do take out the time to explore the values for as many as you could by zooming on various parts of the graph.
+</p>
+```{r, echo=FALSE}
+
+f <- list(
+  family = "Courier New, monospace",
+  size = 18,
+  color = "#7f7f7f"
+)
+y <- list(
+  title = "Country",
+  titlefont = f
+)
+x <- list(
+  title = "HALE (in years)",
+  titlefont = f
+) 
+
+
+plot_ly(Data_country_years[Data_country_years$year == 2017,], x = ~val, y = ~reorder(location,val)) %>% 
+  add_markers()%>%
+  layout(xaxis = x, yaxis = y)
+
+```
+<p>
+After rank ordering the countries by the HALE values, we selected to create an animation for top 10 and last 10 countries for showing the transition intheir values over the period of years 1990 to 2017. \
+
+As we can see from them Japan and Singapore are 2 the places which have maintained their top positions. Andora, Sweden and Iceland inspite of increasing their respective values for HALE drop down in the positions. We think, availibility of better medical facilities along with the development in technology and easy adaptation in other countries as compared to that in these countries might have been the cause for the same. Also, we can see that the bottom most countries are the ones that are still developing ones and have less technological support available for helping them out through the medical situations. Thus, we can say that technological development does play an important role for helping us humans to survive more. 
+</p>
+```{r, fig.show='animate', echo=FALSE}
+
+
+my <- Data_country_years %>%
+  group_by(year) %>%
+  mutate(rank = rank(-val)) %>%
+  group_by(location) %>% 
+  filter(rank <=10) %>%
+  ungroup()
+  
+  
+my1 <- Data_country_years %>%
+  group_by(year) %>%
+   mutate(rank = rank(-val))  %>%
+  group_by(location) %>% 
+  filter(rank > 185) %>%
+  ungroup()
+
+my <- rbind(my,my1)
+my <- my %>%
+  group_by(year) %>%
+  mutate(rank = rank(-val),
+         Value_rel = val/val[rank==1],
+         Value_lbl = paste0(" ",round(val/1e9)))
+
+staticplot = ggplot(my, aes(rank, group = location, 
+                fill = as.factor(location), color = as.factor(location))) +
+  geom_tile(aes(y = val/2,
+                height = val,
+                width = 0.9), alpha = 0.8, color = NA) +
+  geom_text(aes(y = 0, label = paste(location, " ")), vjust = 0.2, hjust = 1) +
+  geom_text(aes(y=val,label = val, hjust=0)) +
+  coord_flip(clip = "off", expand = FALSE) +
+  scale_y_continuous(labels = scales::comma) +
+  scale_x_reverse() +
+  labs (x = "Countries", y = "Life Expectancy in years") +
+  guides(color = FALSE, fill = FALSE) +
+  theme(axis.line=element_blank(),
+        axis.text.x=element_blank(),
+        axis.text.y=element_blank(),
+        axis.ticks=element_blank(),
+        axis.title.x=element_blank(),
+        axis.title.y=element_blank(),
+        legend.position="none",
+        panel.background=element_blank(),
+        panel.border=element_blank(),
+        panel.grid.major=element_blank(),
+        panel.grid.minor=element_blank(),
+        panel.grid.major.x = element_line( size=.1, color="grey" ),
+        panel.grid.minor.x = element_line( size=.1, color="grey" ),
+        plot.title=element_text(size=25, hjust=0.5, face="bold", colour="grey", vjust=-1),
+        plot.subtitle=element_text(size=18, hjust=0.5, face="italic", color="grey"),
+        plot.caption =element_text(size=8, hjust=0.5, face="italic", color="grey"),
+        plot.background=element_blank(),
+       plot.margin = margin(2,2, 2, 4, "cm"))
+
+
+anim = staticplot + transition_states(year, transition_length = 4, state_length = 1) +
+  view_follow(fixed_x = TRUE)  +
+  labs(title = 'HALE per Year : {closest_state}',  
+       subtitle  =  "Top 10 Countries")
+
+animate(anim, 200, fps = 5,  width = 1200, height = 1000,renderer = ffmpeg_renderer())
+
+```
+<p.
+The below graph extends the above one in the sense that it has 40 countries into consideration (Top20 and bottom 20 when ranked based on the HALE values) The still graph with these many countries helps us see the fact that there is wide gap of 15 years when shifting from the 20th country from top to 20th country from bottom. 15 years! A big gap it is for sure...
+</p>
+```{r, fig.height= 12, fig.width=14, echo=FALSE}
+Data <- Data_country_years %>% filter(year== 2017)
+
+
+my <- Data %>%
+  mutate(rank = rank(-val)) %>%
+  group_by(location) %>% 
+  filter(rank <=20) %>%
+  ungroup()
+  
+  
+my1 <- Data %>%
+   mutate(rank = rank(-val))  %>%
+  group_by(location) %>% 
+  filter(rank > 175) %>%
+  ungroup()
+
+my <- rbind(my,my1)
+
+my <- my %>%
+   mutate(rank2 = rank(-val))
+
+staticplot = ggplot(my, aes(rank2, group = location, fill = as.factor(location), color = as.factor(location))) +
+  geom_tile(aes(y = val/2,height = val,width = 0.9), alpha = 1, color = NA) +
+  geom_text(aes(y = 0, label = paste(location, " ")),size = 3, vjust = 0.2, hjust = 1) +
+  geom_text(aes(y=val,label = val, hjust=0),size = 3) +
+  coord_flip(clip = "off", expand = FALSE) +
+  scale_y_continuous(labels = scales::comma) +
+  scale_x_reverse() +
+  labs (x = "Countries", y = "Life Expectancy in years") +
+  guides(color = FALSE, fill = FALSE) +
+  theme(axis.line=element_blank(),
+        axis.text.x=element_blank(),
+        axis.text.y=element_blank(),
+        axis.ticks=element_blank(),
+        axis.title.x=element_text(size=18, hjust=0.5, face="italic", color="Black"),
+        axis.title.y=element_blank(),
+        legend.position="none",
+        panel.background=element_blank(),
+        panel.border=element_blank(),
+        panel.grid.major=element_blank(),
+        panel.grid.minor=element_blank(),
+        panel.grid.major.x = element_line( size=.1, color="grey" ),
+        panel.grid.minor.x = element_line( size=.1, color="grey" ),
+        plot.title=element_text(size=25, hjust=0.5, face="bold", colour="grey", vjust=-1),
+        plot.subtitle=element_text(size=18, hjust=0.5, face="italic", color="grey"),
+        plot.caption =element_text(size=8, hjust=0.5, face="italic", color="grey"),
+        plot.background=element_blank(),
+       plot.margin = margin(2,2, 2, 4, "cm"))
+
+
+staticplot
+```
+<p>
+Now, let's shift gears towards analyzing the HALE values for different genders over the countries. Below is the plot showing similar information as the first one, but here we have seperated the values for different genders and as can be seen for almost each country there is a clear trend of females having more HALE as compared to males. STRANGE thing for such a spectacular pattern to exist over all the countries! \
+
+We need to study the different aspects for understanding why the pattern exists and get the answer to the question "Why do women live longer than men?"
+</p>
+
+```{r, echo=FALSE}
+
+plot_ly(Data_2017, x = ~val, y = ~reorder(location,val),
+        color = ~sex) %>%
+  add_markers()%>%
+  layout(xaxis = x, yaxis = y)
+
+```
+<p>
+From the below drawn line and barcharts also it is a clear trend that the HALE values for females have been higher than the ones for males since 1990s and the trend has remained the same over the period of years.
+</p>
+```{r, width=10, echo=FALSE}
+
+ggplotly(ggplot(Data_global_years, aes(year, val, color=sex)) + 
+    geom_line() +
+    ggtitle("Health Adjusted Life Expectancy") +
+    labs (x = "", y = "Life Expectancy in years") +
+    theme_grey(14) +
+    theme(legend.title = element_blank())+
+    scale_x_continuous(name="Years", (breaks=seq(1990,2017,2))))
+
+
+p<-ggplot() + geom_bar(data=Data_global_years, aes(x = year, y=val, fill=sex), stat="identity", position="dodge") + scale_x_continuous(name="Years", (breaks=seq(1990,2017,2))) + ggtitle("Health Adjusted Life Expectancy") +
+    labs (x = "", y = "Life Expectancy in years") + theme(legend.position="bottom")
+  #coord_cartesian(ylim=c(50,65))
+
+
+p
+
+
+```
+<p>
+Combining the trends for all countries we now show the plots for the values of HALE over the world chloropeth for the year 2017. We have seperated the choropleths into 3 components. \
+
+1- having average values of HALE for both the genders \
+
+2- For Females \
+
+3- For Males \
+
+Although we get the same insight as from the above graphs and that from looking at the legends that the overall HALE values for females is larger globally. We cannot compare the values countrywise here as there scales are continous and the ranges for both of them being different it is very hard to guage the difference in the values for each of those. \
+
+On looking up for what might be the reasons for females having higher HALE than male and referring to various articles, these were the reasons that might be the ones resulting into such results: \
+
+1- The female advantage in life expectancy is partly, but not entirely driven by higher chances of surviving childhood.
+  Accessible proof shows that youngster death rates in the present rich nations were higher for male than female babies in the nineteenth century, and the male inconvenience in child mortality became through the primary portion of the twentieth century, as wellbeing results improved. Essentially, maternal mortality in these nations used to be extremely high, and it diminished drastically over the twentieth century. Changes in child and maternal mortality do affect future contrasts among people, however, they can't completely clarify the ascent in the life span hole that we've seen in rich nations in the course of the only remaining century. \
+  
+  
+2- Biological differences can also be part of the story. 
+  The proof shows that distinctions in chromosomes and hormones among people influence life span. For instance, males will, in general, have increasingly fat encompassing the organs (they have progressively 'visceral fat') though females will, in general, have increasingly fat sitting legitimately under the skin ('subcutaneous fat'). This distinction is resolved both by estrogen and the nearness of the second X chromosome in females, and it is important for life span since fat surrounding the organs predicts cardiovascular ailment. \
+  
+3- Freely of the definite weight, we realize that in any event part of the motivation behind why females live such a great amount of longer than men today, yet not before, has to do with the way that some key non-biological elements have changed. What are these evolving factors? Some are outstanding and moderately direct, similar to the way that men smoke all the more frequently. Others are increasingly confounded. For instance, new proof shows that in rich nations the female bit of leeway expanded to some degree on the grounds that irresistible sicknesses used to influence ladies excessively a century prior, so propels in medication that diminished the long haul wellbeing trouble from irresistible ailments, particularly for survivors, wound up raising ladies' life span lopsidedly. \
+
+The proof is restricted and we just have fractional answers. We realize that natural, social and ecological factors all add to the way that females live longer than males; however, we don't know precisely how solid the overall commitment of every one of these variables is. We realize that the more drawn out life expectancy of females is basic in different creatures, yet it isn't universal. We likewise realize that organic, social and natural factors all add to the way that females live longer than males; yet we don't know precisely how solid the general commitment of every one of these components is. \
+</p>
+
+
+```{r, echo=FALSE, message=FALSE, warning=FALSE, comment=FALSE, echo=FALSE}
+g <- list(
+  showframe = FALSE,
+  showcoastlines = FALSE,
+  projection = list(type = 'Mercator')
+)
+
+
+Data <- Data_country_years %>% filter(year== 2017)
+
+Data2m <- joinCountryData2Map( Data, 
+                               nameJoinColumn="location", 
+                               joinCode="NAME" )
+mapCountryData(Data2m, 
+                nameColumnToPlot='val', 
+                catMethod='fixedWidth', 
+                numCats=100,
+                mapTitle="Health Adjusted Life Expectancy in Years(2017): Both Sexes",
+                missingCountryCol="white"
+)
+
+
+Data2female <- Data_2017 %>% filter(sex=="Female")
+
+Data2m <- joinCountryData2Map( Data2female, 
+                               nameJoinColumn="location", 
+                               joinCode="NAME" )
+mapCountryData(Data2m, 
+                nameColumnToPlot='val', 
+                catMethod='fixedWidth', 
+                numCats=100,
+                mapTitle="Health Adjusted Life Expectancy in Years(2017): Female",
+                missingCountryCol="white"
+)
+
+Data2male <- Data_2017 %>% filter(sex=="Male")
+
+Data2m <- joinCountryData2Map( Data2male, 
+                               nameJoinColumn="location", 
+                               joinCode="NAME" )
+mapCountryData(Data2m, 
+                nameColumnToPlot='val', 
+                catMethod='fixedWidth', 
+                numCats=100,
+                mapTitle="Health Adjusted Life Expectancy in Years(2017): Male",
+                missingCountryCol="white"
+)
+
+
+```
+<p>
+If, we focus on the 4 countries (United States, India, Canada and Zimbabwe) we get the plots as shown below. \
+
+The trend guages from these can be summarized as below. \
+1- The values of HALE for United States are increasing till and then slightly decreasing after the rate of change becomes constant in 2013. The decrease might be due to the effects of global warming affecting the life expectancy of people living in the United States. Also, recenlty in last few years USA has been facing many natural disasters and the decrease might be a result of those as well. \
+2- The values of HALE for India are increasing at kind of constant rate which is higher than that of Canada but as Canada has already started it from a higher value it is reasonable to not have a higher increase rate. \
+3- The values of HALE for Zimbabwe is decreasing and is increasing on latter then after 20089. This might be due to various kinds of epidemics that would have resulted in people not being considered as healthy and hence reducing the overall HALE values. A cholera epidemice as for example was prevelant in Zimbabwe in the year 2008. (`https://www.hhrjournal.org/2017/07/the-cholera-epidemic-in-zimbabwe-2008-2009-a-review-and-critique-of-the-evidence/`) \
+</p>
+
+
+
+```{r echo=FALSE, fig.height=12}
+
+d1<- Data_country_years[Data_country_years$location == "United States" ,]
+d2<- Data_country_years[Data_country_years$location == "India" ,]
+d3<- Data_country_years[Data_country_years$location == "Canada" ,]
+d4<- Data_country_years[Data_country_years$location == "Zimbabwe" ,]
+d<-rbind(d1,d2,d3,d4)
+ggplotly(ggplot(d, aes(year, val)) + 
+    geom_line() +
+    ggtitle("Health Adjusted Life Expectancy") +
+    labs (x = "", y = "Life Expectancy in years") +
+    theme_grey() +
+    theme(legend.title = element_blank())+
+  facet_wrap(~location,  ncol=1)+
+  scale_x_continuous(name="Years", (breaks=seq(1990,2017,3))))
+
+```
+
+```{r echo=FALSE}
+ggplotly(ggplot(d1, aes(year, val)) + 
+    geom_line() +
+    ggtitle("Health Adjusted Life Expectancy") +
+    labs (x = "", y = "Life Expectancy in years") +
+    theme_grey(14) +
+    theme(legend.title = element_blank())+
+  scale_x_continuous(name="Years", (breaks=seq(1990,2017,3))))
+```
+<p>
+Folowing graph show the change in HALE over different countries throughout the years from 1990 to 2017. The choropleth shows that the shades for each and every country are getting darker respectively for each country showing the overall increase in the value of HALE for each country.The color difference over the period of years for developed countries as compared to the ones which are classified as developing ones can show an insight for the amount of development that has been taking place in countries. 
+</p>
+```{r ch1unk-label, include=FALSE , message=FALSE, warning=FALSE, comment=FALSE}
+
+datalow <- Data_country_years %>% dplyr::rename(region= location, value = val) %>% 
+  mutate(region = tolower(region)) %>%
+  mutate(region = recode(region,"united states"    = "united states of america", "russian federation"="russia","congo"= "republic of congo", "tanzania" = "united republic of tanzania", "serbia" = "republic of serbia"))
+
+choropleths = list()
+j=1
+
+for (i in 1:nrow(datalow))
+{
+  if (is.na(datalow[i,"value"])) 
+    {
+    datalow[i,"breaks"] <- "NA"
+  } else if (datalow[i,"value"] < 40) {
+    datalow[i,"breaks"] <- "0-40"
+  } else if (datalow[i,"value"]>=40 & datalow[i,"value"]<45) {
+    datalow[i,"breaks"] <- "40-45"
+  } else if (datalow[i,"value"]>=45 & datalow[i,"value"]<50) {
+    datalow[i,"breaks"] <- "45-50"
+  } else if (datalow[i,"value"]>=50 & datalow[i,"value"]<55) {
+   datalow[i,"breaks"] <- "50-55"
+  } else if (datalow[i,"value"]>=55 & datalow[i,"value"]<60) {
+    datalow[i,"breaks"] <- "55-60"
+  } else if (datalow[i,"value"]>=60 & datalow[i,"value"]<65) {
+    datalow[i,"breaks"] <- "60-65"
+  } else if (datalow[i,"value"]>=65 & datalow[i,"value"]<70) {
+   datalow[i,"breaks"] <- "65-70"
+  }else if (datalow[i,"value"]>=70 & datalow[i,"value"]<75) {
+   datalow[i,"breaks"] <- "70-75"
+  }else if (datalow[i,"value"]>=75) {
+    datalow[i,"breaks"] <- "75+"
+  }
+}
+datalow$value<-datalow$breaks
+```
+
+```{r ch11unk-label, include=FALSE , message=FALSE, warning=FALSE, comment=FALSE}
+for (i in 1990:2017) {
+  df = datalow %>% filter(year== i)
+  title = paste0("Year: ",i)
+  choropleths[[j]] = country_choropleth(df, title=title, num_colors = 5)
+  j=j+1
+}
+choroplethr_animate(choropleths)
+
+
+```
+<iframe src="animated_choropleth.html" width="800" height="500"></iframe>
+
+
+<!--chapter:end:05-Health_Adjusted_Life_Expectancy.Rmd-->
+
+# Animation
+
+
+```{r, include=FALSE}
+library(ggplot2)
+library(maps)
+library(choroplethr)
+library(choroplethrMaps)
+library(ggmap)
+library(countrycode)
+
+library(visdat)
+library(naniar)
+
+library(plotly)
+
+library(gganimate)    # To realize the animation
+library(maptools)     # world boundaries coordinates
+library(viridis)      # for a nice color palette
+library(rgeos)
+
+library(tmaptools)
+library(countrycode)
+library(sf)             # spatial data classes
+library(rnaturalearth)  # world map data
+library(readxl)         # reading excel files
+library(dplyr)          # data manipulation
+library(tidyr)          # data manipulation
+library(purrr)          # data manipulation
+library(cartogram)      # cartograms creation
+library(tmap)           # maps creation
+```
+
+
+```{r, comment=NA, echo=FALSE, message=FALSE, warning=FALSE}
+
+result <- data.frame(Year = as.numeric(),
+                     Total = as.numeric(),
+                     Country = as.character())
+
+readData <- function(countryCode, x)
+{
+  country = ""
+  
+  path = paste("Deaths_1x1/",as.character(countryCode),".Deaths_1x1.txt", sep="")
+  
+  con <- file(path, "r")
+  first_line <- readLines(con, n=1)
+  close(con)
+  
+  temp <- strsplit(first_line, ",")
+  country1 <- temp[[1]][1]
+  if(country1 == 'The United States of America'){
+    country <- 'united states of america'
+  }
+  else{
+    country <- country1
+  }
+  
+  deaths = read.delim(path,sep = "")
+  #deaths
+  
+  deaths <- deaths[,1:5]
+  #deaths
+  
+  colnames(deaths) <- c("Year", "Age", "Female", "Male", "Total")
+  
+  
+  deaths <- deaths[-c(1),]
+  deaths <- deaths[deaths$Age == 0,]
+  deaths <- deaths[,-c(2,3,4)]
+  
+  deaths['ISO3'] <- countrycode(country, "country.name", "iso3c")
+  
+  deaths$Total <- as.numeric(as.character(deaths$Total))
+  deaths$Year <- as.numeric(as.character(deaths$Year))
+  
+  return (deaths)
+  #ggplot(deaths, aes(x = Year, y = Total, group = 1)) + 
+  #  geom_line(color="red")
+}
+countries <- c('AUT', 'BEL', 'BGR', 'BLR', 'CAN', 'CHE', 'CHL', 'CZE', 'DEUTNP', 'DNK', 'ESP', 'EST', 'FIN', 'FRATNP', 'GRC', 'HKG', 'HRV', 'HUN', 'IRL', 'ISL', 'ISR', 'ITA', 'LTU', 'LUX', 'LVA', 'NLD', 'NOR', 'NZL_NP', 'POL', 'PRT', 'RUS', 'SVK', 'SVN', 'SWE', 'TWN', 'UKR','GBR_NP', 'AUS', 'USA', 'JPN', 'KOR')
+
+for(i in countries){
+  df <- readData(i)
+  result <- rbind(result, df)
+}
+
+years <- unique(result$Year)
+
+years <- sort(years)
+
+temp <- data.frame("ISO3" = as.character(countries))
+
+#temp
+country_year = data.frame("ISO3" = as.character(), "Year" = as.numeric())
+
+for(i in 1:nrow(temp)) {
+  for(j in 1:length(years)){
+    x = data.frame("ISO3" = temp[i,],"Year" = years[j])
+    country_year = rbind(country_year, x)
+  }
+}
+
+#result
+
+finalDf <- merge(x = country_year, y = result, by = c("ISO3", "Year"), all=TRUE)
+
+#finalDf
+
+```
+
+<p>
+First we start by understanding the overall trend of the data by plotting a line graph with the all the data we currently have with us. \
+
+The following is a line plot, with each line for a different country. x-axis has the year and y-axis has the number of deaths in that particular year. 
+</p>
+```{r, echo=FALSE, comment=NA, message=FALSE, warning=FALSE}
+
+plot_ly(finalDf, x = ~Year, y = ~Total, type = 'scatter', mode = 'lines', color = ~ISO3) %>%
+  layout(title = 'Total Number of Deaths over the years - countrywise',
+         xaxis = list(title = 'Years'),
+         yaxis = list (title = 'Number of deaths'))
+
+```
+<p>
+We can cleary see in this plot that the number of deaths in all parts of the world is decreasing. \
+
+Especially if we look at some European countries like France, Spain and Italy. We can see that the number of deaths has drastically decreased from the years 1850 to the current year. One of the reasons behind this could be the World Wars due to which a lot of lives were lost. \
+
+To understand if people are actually living longer or no, we analyse the data on Health Adjusted Life Expectancy in the next page. \
+
+After doing some more research on this topic, we found out more data on the United Nations website. We use this data to plot an animated cartogram and an animated choropleth of the entire world. \
+
+We have the data for 177 countries, over a time period of 1990 to 2020 (for the year 2020 they estimated the number of deaths). \
+</p>
+
+```{r readingExcel, echo=FALSE, comment=NA, message=FALSE, warning=FALSE}
+
+library(readxl)
+my_data <- read_excel("WPP2019_MORT_F03_1_DEATHS_BOTH_SEXES.xlsx")
+
+#my_data
+
+new_data <- my_data %>%
+  mutate(sov_a3 = countrycode(my_data$`Region, subregion, country or area *`, "country.name", "iso3c"))
+```
+<p>
+Before we jump into making the choropleths and cartograms, we would like to analyse the number of deaths by the economy and income group of the countries. Does the economy or income group of the country actually affect the deaths in that country? And has the pattern changed over the last 25 years? Lets see. 
+</p>
+
+```{r, echo=FALSE, comment=NA, message=FALSE, warning=FALSE}
+
+world_map = ne_countries(returnclass = "sf") 
+
+world_map_1 = world_map %>% 
+  dplyr::select(sov_a3, gdp_md_est, economy, income_grp) %>%  
+  st_transform(world_map, crs = "+proj=robin")
+
+world_data_new = left_join(world_map_1, new_data, by = "sov_a3") %>% 
+  dplyr::select(c("sov_a3","gdp_md_est", "economy", "income_grp", "1990-1995", "1995-2000", "2000-2005", "2005-2010", "2010-2015", "2015-2020")) %>% 
+  gather(key = "year", value = "deaths", c("1990-1995", "1995-2000", "2000-2005", "2005-2010", "2010-2015", "2015-2020"))
+
+
+ggplot(world_data_new, 
+       aes(x = world_data_new$income_grp, 
+           y = world_data_new$deaths, 
+           fill = world_data_new$income_grp)) + 
+  geom_col() +
+  facet_wrap(~year) +
+  coord_flip() +
+  scale_fill_viridis_d() +
+  labs(x = "Income Group of countries", y = "Number of Deaths", title="Number of Deaths by Income of the country") +
+  theme(legend.position = "none") 
+
+
+ggplot(world_data_new, 
+       aes(x = world_data_new$economy, 
+           y = world_data_new$deaths, 
+           fill = world_data_new$economy)) + 
+  geom_col() +
+  facet_wrap(~year) +
+  coord_flip() +
+  scale_fill_viridis_d() +
+  labs(x = "Economy", y = "Number of Deaths", title="Number of Deaths by Economy of the country") +
+  theme(legend.position = "none") 
+
+
+```
+<p>
+We can clearly see here, that the economy and income group of a country actually does affect the number of deaths in the country. This is not surprising as the healthcare facilities might not be as good in a still developing country as compared to a fully developed country. \
+
+But, what is surprising to see is that the pattern has not changed over the years. \
+
+In the past 25 years the pattern almost remains the same. \
+
+One possible explanation for this might be the actual population of the countries. As the total population of the countries is increasing, and the trend is that the population of developing countries is way higher than the developed ones. Due to a high population increase, the deaths also might have increased and the because of which we are not seeing any difference in the patterns here. \
+
+Nevertheless, lets go on and build our plots for some interesting spatial analysis. \
+</p>
+
+<h3>Spatial Analysis!</h3>
+```{r aniamtedChoropleth, echo=FALSE, comment=NA, message=FALSE, warning=FALSE}
+
+
+
+choropleth_data <- tidyr::gather(new_data, Year, value, -c("Index", "sov_a3", "Variant", "Region, subregion, country or area *", "Notes", "Country code", "Type", "Parent code"))
+
+data_low <- choropleth_data %>% dplyr::rename(region = `Region, subregion, country or area *`) %>% 
+  dplyr::mutate(region = tolower(region))
+
+choropleths_death = list()
+j=1
+
+years <- c("1990-1995", "1995-2000", "2000-2005", "2005-2010", "2010-2015", "2015-2020")
+
+data_2010_2015 <- subset(data_low,data_low$Year=="2010-2015")
+
+country_choropleth(data_2010_2015, title = "Choropleth: Number of Deaths between the years 2010-2015")
+
+#for (i in years) {
+#df           = data_low %>% filter(Year== i)
+#title        = paste0("Year: ",i)
+#choropleths_death[[j]] = country_choropleth(df, title=title)
+#j=j+1
+#}
+
+
+#setwd("~/numberOfDeathsAnimation")
+#choroplethr_animate(choropleths_death)
+
+# htmltools::includeHTML("animated_choropleth1.html")
+
+```
+
+```{r cartogram, echo=FALSE, comment=NA, message=FALSE, warning=FALSE}
+world_map = world_map %>% 
+  dplyr::select(sov_a3) %>%  
+  st_transform(world_map, crs = "+proj=robin")
+
+#if(!dir.exists("data")) dir.create("data")
+#download.file("http://gapm.io/dl_pop", destfile = "data/pop1800_2100.xlsx")
+#world_pop = read_xlsx("data/pop1800_2100.xlsx", sheet = 7)
+
+cols_data <- c("Index", "Variant", "Region, subregion, country or area *", "Notes", "Country code", "Type", "Parent code")
+
+world_data = left_join(world_map, new_data, by = "sov_a3") %>% 
+  dplyr::select(-cols_data) %>% 
+  tidyr::gather(key = "year", value = "deaths", c("1990-1995", "1995-2000", "2000-2005", "2005-2010", "2010-2015", "2015-2020"))
+
+world_data <- world_data[,-c(2:9)]
+
+world_data = world_data %>% 
+  group_by(year) %>% 
+  mutate(total_deaths = sum(as.numeric(deaths), na.rm = TRUE)) %>% 
+  mutate(title = paste0("Year: ", year, "\nTotal Death (mln): ", round(total_deaths/1e6, 2)))
+
+world_data_2010_2015 = world_data %>%
+  filter(year == "2010-2015")
+world_carto1 = cartogram_cont(world_data_2010_2015, "deaths", maxSizeError = 1.5)
+plot(world_carto1["deaths"], main = "Cartogram: Number of Deaths between the years 2010-2015")
+
+```
+
+```{r, echo=FALSE, comment=NA, message=FALSE, warning=FALSE}
+
+# warning: this may make your computer's fan spin!
+world_data_carto = world_data %>% 
+  split(.$year) %>%
+  map(cartogram_cont, "deaths", maxSizeError = 1.5) %>% 
+  do.call(rbind, .)
+
+```
+
+```{r, echo=FALSE, comment=NA, message=FALSE, warning=FALSE}
+# library(magick)
+
+carto_anim = tm_shape(world_data_carto) +
+  tm_polygons("deaths", title = "Deaths: ") +
+  tm_facets(along = "title", free.coords = FALSE, drop.units = TRUE)
+
+# tmap_animation(carto_anim, filename = "deaths.gif", delay = 75,
+#                width = 1326, height = 942)
+
+```
+<p>
+These are some static plots we made to understand the current situation of mortality in the world. \
+
+But wouldn't it be great to see an animated plot, where the number of deaths in each country is changing as the years pass by. \
+
+Lets see how that would look next and also if we can gain some interesting insights from them! \
+</p>
+
+```{r, echo=FALSE, comment=NA, message=FALSE, warning=FALSE}
+htmltools::tags$iframe(title = "Embedded HTML", src = "animated_choropleth1.html", height=500, width=800)
+```
+
+```{r, fig.show='animate', dev='jpeg', ffmpeg.format='gif', echo=FALSE, comment=NA, message=FALSE, warning=FALSE}
+carto_anim
+```
+<p>
+Here we can clearly see that the total number of deaths in the world are mainly in the asian countries like India, China and some african countries. \
+
+The main reason behind this could be because of the huge population of these countries. \
+Nevertheless, we can see some changes in the cartogram, which means that the number of deaths is decreasing slightly as time progresses. \
+
+Next we can also see that the number of deaths in asian countries actually increases as their sizes in the cartogram increases as time progresses. This could be the case as the total population of those countries actually increased in from 1990 to 2019. \
+</p>
+
+<!--chapter:end:06-CartoEurope.Rmd-->
+
+# Conclusion
+
+<p>
+The graphs and information helped us answer the questions we were most curious about. The previous sections in the bookdown mentions a detailed summary of each of the graphs included. \
+We could understand the variation in child mortality, number of deaths across the world, various causes of death, number of deaths in different age and sex groups. 
+</p>
+
+<h3>Future Work</h3>
+<p>
+There are various ways in which people might want to continue to work on the mortality data based on their questions/requirements. In case someone is curious to know more about the information, they can check the avaiability of data online and proceed by working on the data like we did. 
+</p>
+
+
+<h3>NOTE</h3>
+<p>
+Thank you for checking out our bookdown. We hope you like it!
+</p>
+
+<!--chapter:end:07-conclusion.Rmd-->
+
+# Child Mortality Analysis
+
+```{r echo=FALSE, message=FALSE}
+knitr::opts_chunk$set(comment = NA, echo=FALSE, message = FALSE, warning = FALSE)
+options("getSymbols.warning4.0"=FALSE)
+```
+
+```{r echo=FALSE}
+Sys.setenv("plotly_username"="biswaspritam1993")
+Sys.setenv("plotly_api_key"="p3A0ZAbHFdOt9AM3XGb0")
+library(plotly)
+library(dplyr)
+library(tidyverse)
+library(choroplethr)
+library(maps)
+library(countrycode)
+library(choroplethr)
+```
+<h3>Introduction: </h3>
+<p>
+We want to see how the mortality rate of children varies over the course of history during the last 60-70 years. We are particularly selecting  deaths of children who were born alive but died under the age of 5. During our analysis we notice some spatial and temporal patterns. Our major focus is on the countries in  Africa and Asia, sicne these countries have witnessed numerous national-scale events during the last few decades. The datasets for the below plots have been collecte using this tool: http://ghdx.healthdata.org/gbd-results-tool
+  </p>
+```{r, fig.width=8, fig.height=8, comment = NA, echo=FALSE, message = FALSE, warning = FALSE}
+countries <- c("Africa", "Asia", "World", "Northern America", "Europe")
+df <- read.csv("child-mortality-around-the-world.csv")
+
+dt <- df[df$Entity %in% countries,] %>% dplyr::rename(Region = Entity)
+
+p<-ggplot(dt, aes(x=Year, y=mortality_rate, group=Region)) +
+  geom_line(aes(color=Region))+
+  geom_point(aes(color=Region)) +
+  xlab("Year") + ylab("Child mortality rate (%)") +
+  ggtitle(" Child mortality rate over years")
+ggplotly(p)
+```
+<p>
+Here we plot the child mortality rate of various continents and for the world. We notice that for Northern America and Europe, the mortality rate has been quite low since the 1950's. This makes sense because there have been no significant political or socio-econmic events in these two continents since 1950. For Africa and Asia, there have been several epidemic outbreaks, political corruption events,regime changes, and religious reforms which could the affected the lives of the children. The world's child mortality rate also remains siginificantly high due to high weightage of the african deaths. \
+
+We shall now analyze a few major causes of child mortality and how these causes have affected different parts of the world.\
+</p>
+```{r, fig.width=8, fig.height=8, comment = NA, echo=FALSE, message = FALSE, warning = FALSE}
+df <- read.csv("death_cause_time_series.csv")
+#head(df)
+diseases <- c("Lower respiratory infections","Diarrheal diseases","Malaria")
+df <- df[df$cause %in% diseases,] %>% mutate(val = val/1000)
+#head(df)
+
+#p<-ggplot(df, aes(fill=cause, y=val, x=year)) +
+#    geom_bar(position="dodge", stat="identity") +
+p<-ggplot(df, aes(x=year, y=val, group=cause)) +
+  geom_line(aes(color=cause))+
+  xlab("Year") + ylab("Child deaths in 1000's by their causes")+
+  ggtitle("Child deaths over time for common causes")
+ggplotly(p)
+#p
+
+```
+<p>
+We have plotted  plotted some of the major causes of child deaths(globally) over the years. From the plot we can see that the death toll is quite for each of these causes. Deaths due to diarrheal diseases and respiratory diseases have been on a steady decline. This may be attributed to improved infrastructure for sanitation and measures to reduce pollution levels. Malaria on the other hand seemed to low in the 90's, then there was a surge of around 2005. This may be due to big malaria outbreaks in certain regions. Since the malaria outbreaks are short-lived, the deaths seemed to lower after some time.
+  </p>
+```{r, fig.width=8, fig.height=8, comment = NA, echo=FALSE, message = FALSE, warning = FALSE}
+df <- read.csv("pneumonia_time_series.csv")
+
+df$age <- factor(df$age, levels = c("1 to 4", "5 to 9","10 to 14", "15 to 19", "20 to 24", "25 to 29", "30 to 34", "35 to 39", "40 to 44", "45 to 49", "50 to 54", "55 to 59", "60 to 64", "65 to 69", "70 to 74", "75 to 79" ))
+df <- df %>% mutate(val=val/1000)
+
+p<-ggplot(df, aes(x=year, y=val, group=age)) +
+  geom_line(aes(color=age))+
+  xlab("Year") + ylab("Child deaths due to pneumonia in 1000's")+
+  ggtitle("Deaths due to pneumonia over time for various age groups")
+ggplotly(p)
+```
+<p>
+Here we plot the no. of deaths due to pneumonia for different age groups. From the plot we can understand that no.of deaths due to pneumonia is maximum for children with age in 1-4 years bracket. We also notice that no. of deaths due to pneumonia is on a slight decrease. The high no. of deaths for children may be because children in that age are strong enough to resist pneumonia. We notice that the no. of deaths are also comparatively high in old individuals than middle-aged adults. This may be the case of old individuals not having strong immunity against pneumonia.
+  </p>
+```{r, fig.width=8, fig.height=8, comment = NA, echo=FALSE, message = FALSE, warning = FALSE, }
+df <- read.csv("pneumonia_countries.csv")
+
+#head(df)
+df <- df %>% dplyr::rename(country=location)
+p<-ggplot(df, aes(x=year, y=val, group=country)) +
+  geom_line(aes(color=country))+
+  geom_point(aes(color=country)) +
+  xlab("Year") + ylab("Child deaths per 100000 births")+
+  ggtitle(" Child mortality due to pneumonia over time")
+ggplotly(p)
+
+```
+<p>
+Here we plot child deaths / 100000 births due to pneumonia for some countries from each continent. From the plot we can easily say that the death rate is highest for African countries. It is followed by South-Asian countries. The lowest death rates are recorded for European countries and USA. The plot clearly shows that the highest death rates are observed in the developing countries in Africa and South-Asia. This makes sense, since there is low standards of safety, medicine, and precautions taken in most of these countries. The developed countries follow strict standards of precaution and prevention, so they have very low death rates due pneumonia.
+  </p>
+```{r, fig.width=8, fig.height=8, comment = NA, echo=FALSE, message = FALSE, warning = FALSE}
+df <- read.csv("diarrhoea_time_series.csv")
+
+#head(df)
+#library(ggplot2)
+df$age <- factor(df$age, levels = c("1 to 4", "5 to 9","10 to 14", "15 to 19", "20 to 24", "25 to 29", "30 to 34", "35 to 39", "40 to 44", "45 to 49", "50 to 54", "55 to 59", "60 to 64", "65 to 69", "70 to 74", "75 to 79" ))
+
+df <- df %>% mutate(val=val/1000)
+
+p<-ggplot(df, aes(x=year, y=val, group=age)) +
+  geom_line(aes(color=age))+
+  xlab("Year") + ylab("Child deaths in 1000's") +
+  ggtitle("Deaths due to diarrhoea over time for various age groups")
+
+ggplotly(p)
+
+```
+<p>
+Here we plot the no. of deaths due to diarrhoea related diseases. The death are again higher in the children within age bracket 1-4 years. The no. of deaths seem to come down at an uniform rate for the children, whereas for the other age groups, the death rate is quite steady. This shows that are measures being taken reduce the risk of diarrhoea related diseases. The high death rate for children may be due to weak immunity against the diseases.
+  </p>
+```{r, fig.width=8, fig.height=8, comment = NA, echo=FALSE, message = FALSE, warning = FALSE}
+df <- read.csv("diarrhoea_countries.csv")
+
+#head(df)
+p<-ggplot(df, aes(x=year, y=val, group=location)) +
+  geom_line(aes(color=location))+
+  geom_point(aes(color=location)) +
+  xlab("Year") + ylab("Child deaths per 100000 births")+
+  ggtitle(" Child deaths due to diarrhoea over time")
+ggplotly(p)
+```
+<p>
+We have plotted the child deaths / 100000 births due to diarrhoeal diseases, for various countries. We can again see that similar pattern emerging as we saw with deaths due pneumonia. The no. of deaths over time are non increasing for all the countries except for isolated incidents which may have cause peak in  the curves. We also notice the similar pattern where African and South Asian countries consistently have higher values of child deaths  than european countries and USA. We know that diarrhoeal diseases are spread through poor sanitation and water management practices. The under-developed have low levels of sanitation and hygiene practices, so they have high no. of deaths.
+  </p>
+```{r, comment = NA, echo=FALSE, message = FALSE, warning = FALSE}
+df <- read.csv("map_data_2017.csv")
+plotdata <- df %>%
+  dplyr::rename(region = location,
+         value = val) %>%
+  mutate(region = tolower(region)) %>%
+  mutate(region = recode(region,"united states"    = "united states of america", "russian federation"="russia","congo"= "republic of congo", "tanzania" = "united republic of tanzania", "serbia" = "republic of serbia")) %>%
+  mutate(region_code = countrycode(region, "country.name", "iso3c"))
+country_choropleth(plotdata,legend="Child deaths per 100000 births in 2017",title="Child deaths over the world")
+```
+<p>
+In this choropleth map we see the child deaths / 100000 births in 2017 in all countries in the world. We can easily see the clusters of high no. of deaths in Africa and South Asia. We have also mentioned some reasons for the deaths in the areas. The major reasons are - poverty, low hygiene conditions, iliteracy. \
+
+We have used D3 to create a time series choropleth map for various countries in the world. We had received the country wise mortality rate and generated a mapping from country to country-code. We use the country codes and the mortality rates for 1950 to 2015 to construct the time series. Hit the play button to start the time-series from the year 1950. You can find the D3 map in the interactive tab.
+</p>
+
+<iframe src="Mortality_rate_time_series.html" width="800" height="700"></iframe>
+
+```{r, comment = NA, echo=FALSE, message = FALSE, warning = FALSE}
+
+
+############# DATA TRANSFORM CODE FOR D3 CHOROPLELTH MAP######################
+df <- read.csv("child-mortality-around-the-world.csv")
+df <- df[-which(df$Code == ""), ]
+df$Year=as.numeric(as.character(df$Year))
+df <- df[df[,3]>1949,]
+df <- df[df[,3]<2017,]
+
+df_spread<-spread(df, Year, mortality_rate)
+df_spread <- df_spread %>% dplyr::rename(id = Code)
+
+df_spread <- subset( df_spread, select = -Entity )
+
+df2 <- read.csv("countriesRandom.csv")
+values <- df2$id
+value_vec <- as.vector(values)
+df_spread <- df_spread[(df_spread$id %in% value_vec),]
+
+df_spread <- df_spread[order(df_spread$id),]
+df2 <- df2[order(df2$id),]
+######
+
+
+values_s <- df_spread$id
+value_s_vec <- as.vector(values_s)
+df2_s <- df2[!(df2$id %in% value_s_vec),]
+df2_s_id <- df2_s$id
+
+m <- matrix(0, ncol = 66, nrow = 14)
+m <- data.frame(m)
+
+x <- c("1950","1951","1952","1953","1954","1955","1956","1957","1958","1959","1960","1961","1962","1963","1964","1965","1966","1967","1968","1969","1970","1971","1972","1973","1974","1975","1976","1977","1978","1979","1980","1981","1982","1983","1984","1985","1986","1987","1988","1989","1990","1991","1992","1993","1994","1995","1996","1997","1998","1999","2000","2001","2002","2003","2004","2005","2006","2007","2008","2009","2010","2011","2012","2013","2014","2015")
+colnames(m) <- x
+
+
+m <- cbind(m, id = df2_s$id)
+
+m <- m[,c(67, 1:66)]
+
+
+df_final <- data.frame(rbind(df_spread,m))
+x <- c("id","1950","1951","1952","1953","1954","1955","1956","1957","1958","1959","1960","1961","1962","1963","1964","1965","1966","1967","1968","1969","1970","1971","1972","1973","1974","1975","1976","1977","1978","1979","1980","1981","1982","1983","1984","1985","1986","1987","1988","1989","1990","1991","1992","1993","1994","1995","1996","1997","1998","1999","2000","2001","2002","2003","2004","2005","2006","2007","2008","2009","2010","2011","2012","2013","2014","2015")
+colnames(df_final) <- x
+
+df_final <- df_final[order(df_final$id),]
+#newdata <- mtcars[order(mpg),]
+
+write.csv(df_final, file = "mortality_d3_data.csv", row.names=FALSE)
+write.csv(df2, file = "mortality_d3_data_sample.csv", row.names=FALSE)
+
+```
+<h3>Conclusion:</h3>
+<p>
+There are severe disparities between death rates across the continents. Europe and North America fare signifcantly better than Africa and Asia. However from the time series we notice that the death rates are coming down in almost all the countries. This shows there is sigficantly more awareness about the current issues in society and actions are being taken to resolve them.
+</p>
+
+<!--chapter:end:08-Child_mortality_analysis.Rmd-->
+
