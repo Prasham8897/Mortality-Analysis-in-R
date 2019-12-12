@@ -1,4 +1,4 @@
-# HALE
+# Health Adjusted Life Expectancy (HALE)
 
 ```{r, include=FALSE}
 
