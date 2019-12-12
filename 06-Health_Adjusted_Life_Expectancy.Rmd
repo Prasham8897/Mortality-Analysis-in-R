@@ -99,7 +99,7 @@ plot_ly(Data_country_years[Data_country_years$year == 2017,], x = ~val, y = ~reo
 After rank ordering the countries by the HALE values, we selected to create an animation for top 10 and last 10 countries for showing the transition intheir values over the period of years 1990 to 2017. 
 
 As we can see from them Japan and Singapore are 2 the places which have maintained their top positions. Andora, Sweden and Iceland inspite of increasing their respective values for HALE drop down in the positions. We think, availibility of better medical facilities along with the development in technology and easy adaptation in other countries as compared to that in these countries might have been the cause for the same. Also, we can see that the bottom most countries are the ones that are still developing ones and have less technological support available for helping them out through the medical situations. Thus, we can say that technological development does play an important role for helping us humans to survive more. 
-```{r, fig.show='animate', echo=FALSE}
+#```{r, fig.show='animate', echo=FALSE}
 
 
 my <- Data_country_years %>%
