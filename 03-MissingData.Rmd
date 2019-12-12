@@ -30,7 +30,7 @@ library(purrr)          # data manipulation
 library(cartogram)      # cartograms creation
 library(tmap)           # maps creation
 ```
-<h3>Oh yes! We had missing data.<h3>
+<h3>Oh yes! We had missing data.</h3>
 <p>
 I was reading this book - Enlightenment Now by Steven Pinker and came across this chapter on Health and mortality throughout the world. It had pretty interesting graphs depicting that the overall health of the world is becoming better and the people are living for a longer period of time. \
 
