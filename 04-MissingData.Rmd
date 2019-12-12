@@ -30,18 +30,19 @@ library(purrr)          # data manipulation
 library(cartogram)      # cartograms creation
 library(tmap)           # maps creation
 ```
+<h3>Oh yes! We had missing data.<h3>
+<p>
+I was reading this book - Enlightenment Now by Steven Pinker and came across this chapter on Health and mortality throughout the world. It had pretty interesting graphs depicting that the overall health of the world is becoming better and the people are living for a longer period of time. \
 
+While working on this project, I opened this book again and read all the sources given under the graphs. I came across this website here - <http://mortality.org> and decided to use the data given here for understanding the number of deaths throughout the world. \
 
-I was reading this book - Enlightenment Now by Steven Pinker and came across this chapter on Health and mortality throughout the world. It had pretty interesting graphs depicting that the overall health of the world is becoming better and the people are living for a longer period of time. 
+There were two main issues we faced here, firstly the data was not in one file, but it was spread across different text files. Each document had data about only one country. So we had to read the files seperately and then combine them into one database. Another issue was that we got data for only 41 countries here. Nevertheless we realised that this was good enough data to work with. \
 
-While working on this project, I opened this book again and read all the sources given under the graphs. I came across this website here - <http://mortality.org> and decided to use the data given here for understanding the number of deaths throughout the world. 
-
-There were two main issues we faced here, firstly the data was not in one file, but it was spread across different text files. Each document had data about only one country. So we had to read the files seperately and then combine them into one database. Another issue was that we got data for only 41 countries here. Nevertheless we realised that this was good enough data to work with. 
-
-Before we start working on the data we had to do a lot of data cleaning as mentioned earlier. 
-After we parsed each file separately and combined it into one data, we also plotted a graph to do some missing data analysis. 
+Before we start working on the data we had to do a lot of data cleaning as mentioned earlier. \
+After we parsed each file separately and combined it into one data, we also plotted a graph to do some missing data analysis. \
 
 We realised that we have data on 41 countries acorss 268 years, but all the countries did not have data for all the years. 
+</p>
 
 ```{r, comment=NA, echo=FALSE, message=FALSE, warning=FALSE}
 
@@ -131,7 +132,8 @@ ggplot(finalDf,
   labs(x = "Year", y = "Number of Deaths")
 
 ```
-
+<p>
 We can clearly see in the above graphs that most of the data relating to the countries is actually missing. 
 
 One pattern that we noticed here is that there is more data on developed countries like the European countries, in comparison to the still developing countries.
+<p>
