@@ -16,7 +16,10 @@ library(maps)
 library(countrycode)
 library(choroplethr)
 ```
-Introduction: We want to see how the mortality rate of children varies over the course of history during the last 60-70 years. We are particularly selecting  deaths of children who were born alive but died under the age of 5. During our analysis we notice some spatial and temporal patterns. Our major focus is on the countries in  Africa and Asia, sicne these countries have witnessed numerous national-scale events during the last few decades. The datasets for the below plots have been collecte using this tool: http://ghdx.healthdata.org/gbd-results-tool
+<h3>Introduction: </h3>
+<p>
+We want to see how the mortality rate of children varies over the course of history during the last 60-70 years. We are particularly selecting  deaths of children who were born alive but died under the age of 5. During our analysis we notice some spatial and temporal patterns. Our major focus is on the countries in  Africa and Asia, sicne these countries have witnessed numerous national-scale events during the last few decades. The datasets for the below plots have been collecte using this tool: http://ghdx.healthdata.org/gbd-results-tool
+  </p>
 ```{r, fig.width=8, fig.height=8, comment = NA, echo=FALSE, message = FALSE, warning = FALSE}
 countries <- c("Africa", "Asia", "World", "Northern America", "Europe")
 df <- read.csv("child-mortality-around-the-world.csv")
@@ -30,9 +33,11 @@ p<-ggplot(dt, aes(x=Year, y=mortality_rate, group=Region)) +
   ggtitle(" Child mortality rate over years")
 ggplotly(p)
 ```
-Here we plot the child mortality rate of various continents and for the world. We notice that for Northern America and Europe, the mortality rate has been quite low since the 1950's. This makes sense because there have been no significant political or socio-econmic events in these two continents since 1950. For Africa and Asia, there have been several epidemic outbreaks, political corruption events,regime changes, and religious reforms which could the affected the lives of the children. The world's child mortality rate also remains siginificantly high due to high weightage of the african deaths.
+<p>
+Here we plot the child mortality rate of various continents and for the world. We notice that for Northern America and Europe, the mortality rate has been quite low since the 1950's. This makes sense because there have been no significant political or socio-econmic events in these two continents since 1950. For Africa and Asia, there have been several epidemic outbreaks, political corruption events,regime changes, and religious reforms which could the affected the lives of the children. The world's child mortality rate also remains siginificantly high due to high weightage of the african deaths. \
 
-We shall now analyze a few major causes of child mortality and how these causes have affected different parts of the
+We shall now analyze a few major causes of child mortality and how these causes have affected different parts of the world.\
+</p>
 ```{r, fig.width=8, fig.height=8, comment = NA, echo=FALSE, message = FALSE, warning = FALSE}
 df <- read.csv("death_cause_time_series.csv")
 #head(df)
@@ -50,7 +55,9 @@ ggplotly(p)
 #p
 
 ```
+<p>
 We have plotted  plotted some of the major causes of child deaths(globally) over the years. From the plot we can see that the death toll is quite for each of these causes. Deaths due to diarrheal diseases and respiratory diseases have been on a steady decline. This may be attributed to improved infrastructure for sanitation and measures to reduce pollution levels. Malaria on the other hand seemed to low in the 90's, then there was a surge of around 2005. This may be due to big malaria outbreaks in certain regions. Since the malaria outbreaks are short-lived, the deaths seemed to lower after some time.
+  </p>
 ```{r, fig.width=8, fig.height=8, comment = NA, echo=FALSE, message = FALSE, warning = FALSE}
 df <- read.csv("pneumonia_time_series.csv")
 
@@ -63,7 +70,9 @@ p<-ggplot(df, aes(x=year, y=val, group=age)) +
   ggtitle("Deaths due to pneumonia over time for various age groups")
 ggplotly(p)
 ```
+<p>
 Here we plot the no. of deaths due to pneumonia for different age groups. From the plot we can understand that no.of deaths due to pneumonia is maximum for children with age in 1-4 years bracket. We also notice that no. of deaths due to pneumonia is on a slight decrease. The high no. of deaths for children may be because children in that age are strong enough to resist pneumonia. We notice that the no. of deaths are also comparatively high in old individuals than middle-aged adults. This may be the case of old individuals not having strong immunity against pneumonia.
+  </p>
 ```{r, fig.width=8, fig.height=8, comment = NA, echo=FALSE, message = FALSE, warning = FALSE, }
 df <- read.csv("pneumonia_countries.csv")
 
@@ -77,7 +86,9 @@ p<-ggplot(df, aes(x=year, y=val, group=country)) +
 ggplotly(p)
 
 ```
+<p>
 Here we plot child deaths / 100000 births due to pneumonia for some countries from each continent. From the plot we can easily say that the death rate is highest for African countries. It is followed by South-Asian countries. The lowest death rates are recorded for European countries and USA. The plot clearly shows that the highest death rates are observed in the developing countries in Africa and South-Asia. This makes sense, since there is low standards of safety, medicine, and precautions taken in most of these countries. The developed countries follow strict standards of precaution and prevention, so they have very low death rates due pneumonia.
+  </p>
 ```{r, fig.width=8, fig.height=8, comment = NA, echo=FALSE, message = FALSE, warning = FALSE}
 df <- read.csv("diarrhoea_time_series.csv")
 
@@ -95,8 +106,9 @@ p<-ggplot(df, aes(x=year, y=val, group=age)) +
 ggplotly(p)
 
 ```
-
+<p>
 Here we plot the no. of deaths due to diarrhoea related diseases. The death are again higher in the children within age bracket 1-4 years. The no. of deaths seem to come down at an uniform rate for the children, whereas for the other age groups, the death rate is quite steady. This shows that are measures being taken reduce the risk of diarrhoea related diseases. The high death rate for children may be due to weak immunity against the diseases.
+  </p>
 ```{r, fig.width=8, fig.height=8, comment = NA, echo=FALSE, message = FALSE, warning = FALSE}
 df <- read.csv("diarrhoea_countries.csv")
 
@@ -108,7 +120,9 @@ p<-ggplot(df, aes(x=year, y=val, group=location)) +
   ggtitle(" Child deaths due to diarrhoea over time")
 ggplotly(p)
 ```
+<p>
 We have plotted the child deaths / 100000 births due to diarrhoeal diseases, for various countries. We can again see that similar pattern emerging as we saw with deaths due pneumonia. The no. of deaths over time are non increasing for all the countries except for isolated incidents which may have cause peak in  the curves. We also notice the similar pattern where African and South Asian countries consistently have higher values of child deaths  than european countries and USA. We know that diarrhoeal diseases are spread through poor sanitation and water management practices. The under-developed have low levels of sanitation and hygiene practices, so they have high no. of deaths.
+  </p>
 ```{r, comment = NA, echo=FALSE, message = FALSE, warning = FALSE}
 df <- read.csv("map_data_2017.csv")
 plotdata <- df %>%
@@ -119,10 +133,11 @@ plotdata <- df %>%
   mutate(region_code = countrycode(region, "country.name", "iso3c"))
 country_choropleth(plotdata,legend="Child deaths per 100000 births in 2017",title="Child deaths over the world")
 ```
-
-In this choropleth map we see the child deaths / 100000 births in 2017 in all countries in the world. We can easily see the clusters of high no. of deaths in Africa and South Asia. We have also mentioned some reasons for the deaths in the areas. The major reasons are - poverty, low hygiene conditions, iliteracy.
+<p>
+In this choropleth map we see the child deaths / 100000 births in 2017 in all countries in the world. We can easily see the clusters of high no. of deaths in Africa and South Asia. We have also mentioned some reasons for the deaths in the areas. The major reasons are - poverty, low hygiene conditions, iliteracy. \
 
 We have used D3 to create a time series choropleth map for various countries in the world. We had received the country wise mortality rate and generated a mapping from country to country-code. We use the country codes and the mortality rates for 1950 to 2015 to construct the time series. Hit the play button to start the time-series from the year 1950. You can find the D3 map in the interactive tab.
+</p>
 
 <iframe src="Mortality_rate_time_series.html" width="800" height="700"></iframe>
 
@@ -179,4 +194,7 @@ write.csv(df_final, file = "mortality_d3_data.csv", row.names=FALSE)
 write.csv(df2, file = "mortality_d3_data_sample.csv", row.names=FALSE)
 
 ```
-Conclusion: There are severe disparities between death rates across the continents. Europe and North America fare signifcantly better than Africa and Asia. However from the time series we notice that the death rates are coming down in almost all the countries. This shows there is sigficantly more awareness about the current issues in society and actions are being taken to resolve them.
+<h3>Conclusion:</h3>
+<p>
+There are severe disparities between death rates across the continents. Europe and North America fare signifcantly better than Africa and Asia. However from the time series we notice that the death rates are coming down in almost all the countries. This shows there is sigficantly more awareness about the current issues in society and actions are being taken to resolve them.
+</p>
