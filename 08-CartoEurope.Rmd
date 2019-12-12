@@ -110,11 +110,11 @@ finalDf <- merge(x = country_year, y = result, by = c("ISO3", "Year"), all=TRUE)
 
 ```
 
- 
-First we start by understanding the overall trend of the data by plotting a line graph with the all the data we currently have with us. 
+<p>
+First we start by understanding the overall trend of the data by plotting a line graph with the all the data we currently have with us. \
 
 The following is a line plot, with each line for a different country. x-axis has the year and y-axis has the number of deaths in that particular year. 
-
+</p>
 ```{r, echo=FALSE, comment=NA, message=FALSE, warning=FALSE}
 
 plot_ly(finalDf, x = ~Year, y = ~Total, type = 'scatter', mode = 'lines', color = ~ISO3) %>%
@@ -123,16 +123,17 @@ plot_ly(finalDf, x = ~Year, y = ~Total, type = 'scatter', mode = 'lines', color 
          yaxis = list (title = 'Number of deaths'))
 
 ```
+<p>
+We can cleary see in this plot that the number of deaths in all parts of the world is decreasing. \
 
-We can cleary see in this plot that the number of deaths in all parts of the world is decreasing. 
+Especially if we look at some European countries like France, Spain and Italy. We can see that the number of deaths has drastically decreased from the years 1850 to the current year. One of the reasons behind this could be the World Wars due to which a lot of lives were lost. \
 
-Especially if we look at some European countries like France, Spain and Italy. We can see that the number of deaths has drastically decreased from the years 1850 to the current year. One of the reasons behind this could be the World Wars due to which a lot of lives were lost.
+To understand if people are actually living longer or no, we analyse the data on Health Adjusted Life Expectancy in the next page. \
 
-To understand if people are actually living longer or no, we analyse the data on Health Adjusted Life Expectancy in the next page. 
+After doing some more research on this topic, we found out more data on the United Nations website. We use this data to plot an animated cartogram and an animated choropleth of the entire world. \
 
-After doing some more research on this topic, we found out more data on the United Nations website. We use this data to plot an animated cartogram and an animated choropleth of the entire world. 
-
-We have the data for 177 countries, over a time period of 1990 to 2020 (for the year 2020 they estimated the number of deaths). 
+We have the data for 177 countries, over a time period of 1990 to 2020 (for the year 2020 they estimated the number of deaths). \
+</p>
 
 ```{r readingExcel, echo=FALSE, comment=NA, message=FALSE, warning=FALSE}
 
@@ -144,8 +145,9 @@ my_data <- read_excel("WPP2019_MORT_F03_1_DEATHS_BOTH_SEXES.xlsx")
 new_data <- my_data %>%
   mutate(sov_a3 = countrycode(my_data$`Region, subregion, country or area *`, "country.name", "iso3c"))
 ```
-
+<p>
 Before we jump into making the choropleths and cartograms, we would like to analyse the number of deaths by the economy and income group of the countries. Does the economy or income group of the country actually affect the deaths in that country? And has the pattern changed over the last 25 years? Lets see. 
+</p>
 
 ```{r, echo=FALSE, comment=NA, message=FALSE, warning=FALSE}
 
@@ -185,17 +187,19 @@ ggplot(world_data_new,
 
 
 ```
+<p>
+We can clearly see here, that the economy and income group of a country actually does affect the number of deaths in the country. This is not surprising as the healthcare facilities might not be as good in a still developing country as compared to a fully developed country. \
 
-We can clearly see here, that the economy and income group of a country actually does affect the number of deaths in the country. This is not surprising as the healthcare facilities might not be as good in a still developing country as compared to a fully developed country. 
+But, what is surprising to see is that the pattern has not changed over the years. \
 
-But, what is surprising to see is that the pattern has not changed over the years. 
+In the past 25 years the pattern almost remains the same. \
 
-In the past 25 years the pattern almost remains the same. 
+One possible explanation for this might be the actual population of the countries. As the total population of the countries is increasing, and the trend is that the population of developing countries is way higher than the developed ones. Due to a high population increase, the deaths also might have increased and the because of which we are not seeing any difference in the patterns here. \
 
-One possible explanation for this might be the actual population of the countries. As the total population of the countries is increasing, and the trend is that the population of developing countries is way higher than the developed ones. Due to a high population increase, the deaths also might have increased and the because of which we are not seeing any difference in the patterns here. 
+Nevertheless, lets go on and build our plots for some interesting spatial analysis. \
+</p>
 
-Nevertheless, lets go on and build our plots for some interesting spatial analysis. 
-
+<h3>Spatial Analysis!</h3>
 ```{r aniamtedChoropleth, echo=FALSE, comment=NA, message=FALSE, warning=FALSE}
 
 
@@ -279,12 +283,13 @@ carto_anim = tm_shape(world_data_carto) +
 #                width = 1326, height = 942)
 
 ```
+<p>
+These are some static plots we made to understand the current situation of mortality in the world. \
 
-These are some static plots we made to understand the current situation of mortality in the world. 
+But wouldn't it be great to see an animated plot, where the number of deaths in each country is changing as the years pass by. \
 
-But wouldn't it be great to see an animated plot, where the number of deaths in each country is changing as the years pass by. 
-
-Lets see how that would look next and also if we can gain some interesting insights from them!
+Lets see how that would look next and also if we can gain some interesting insights from them! \
+</p>
 
 ```{r, echo=FALSE, comment=NA, message=FALSE, warning=FALSE}
 htmltools::tags$iframe(title = "Embedded HTML", src = "./numberOfDeathsAnimation/animated_choropleth.html", height=500, width=800)
@@ -293,10 +298,11 @@ htmltools::tags$iframe(title = "Embedded HTML", src = "./numberOfDeathsAnimation
 ```{r, fig.show='animate', dev='jpeg', ffmpeg.format='gif', echo=FALSE, comment=NA, message=FALSE, warning=FALSE}
 carto_anim
 ```
+<p>
+Here we can clearly see that the total number of deaths in the world are mainly in the asian countries like India, China and some african countries. \
 
-Here we can clearly see that the total number of deaths in the world are mainly in the asian countries like India, China and some african countries. 
+The main reason behind this could be because of the huge population of these countries. \
+Nevertheless, we can see some changes in the cartogram, which means that the number of deaths is decreasing slightly as time progresses. \
 
-The main reason behind this could be because of the huge population of these countries.
-Nevertheless, we can see some changes in the cartogram, which means that the number of deaths is decreasing slightly as time progresses. 
-
-Next we can also see that the number of deaths in asian countries actually increases as their sizes in the cartogram increases as time progresses. This could be the case as the total population of those countries actually increased in from 1990 to 2019. 
+Next we can also see that the number of deaths in asian countries actually increases as their sizes in the cartogram increases as time progresses. This could be the case as the total population of those countries actually increased in from 1990 to 2019. \
+</p>
