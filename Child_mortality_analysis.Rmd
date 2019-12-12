@@ -131,7 +131,10 @@ country_choropleth(plotdata,legend="Child deaths per 100000 births in 2017",titl
 
 In this choropleth map we see the child deaths / 100000 births in 2017 in all countries in the world. We can easily see the clusters of high no. of deaths in Africa and South Asia. We have also mentioned some reasons for the deaths in the areas. The major reasons are - poverty, low hygiene conditions, iliteracy. 
 
-We have used D3 to create a time series choropleth map for various countries in the world. We had received the country wise mortality rate and generated a mapping from country to country-code. We use the country codes and the mortality rates for 1950 to 2015 to construct the time series. Hit the play button to start the time-series from the year 1950. You can find the D3 map in the interactive tab. 
+We have used D3 to create a time series choropleth map for various countries in the world. We had received the country wise mortality rate and generated a mapping from country to country-code. We use the country codes and the mortality rates for 1950 to 2015 to construct the time series. Hit the play button to start the time-series from the year 1950. During the timelapse we notice a lot of changes in the African and Asian continent which shows that there have been a lot of events that have affected the well being of children in this areas. The continents as a whole tend get lighter in shade over time , which shows that the death rate is lowering gradually.
+
+<iframe src="Mortality_rate_time_series.html" width="1000" height="700"></iframe>
+
 ```{r, comment = NA, echo=FALSE, message = FALSE, warning = FALSE}
 
 
@@ -190,3 +193,5 @@ write.csv(df2, file = "mortality_d3_data_sample.csv", row.names=FALSE)
 
 ```
 Conclusion: There are severe disparities between death rates across the continents. Europe and North America fare signifcantly better than Africa and Asia. However from the time series we notice that the death rates are coming down in almost all the countries. This shows there is sigficantly more awareness about the current issues in society and actions are being taken to resolve them. 
+
+
