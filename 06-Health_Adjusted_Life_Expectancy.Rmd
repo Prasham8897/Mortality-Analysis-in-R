@@ -99,7 +99,7 @@ plot_ly(Data_country_years[Data_country_years$year == 2017,], x = ~val, y = ~reo
 After rank ordering the countries by the HALE values, we selected to create an animation for top 10 and last 10 countries for showing the transition intheir values over the period of years 1990 to 2017. 
 
 As we can see from them Japan and Singapore are 2 the places which have maintained their top positions. Andora, Sweden and Iceland inspite of increasing their respective values for HALE drop down in the positions. We think, availibility of better medical facilities along with the development in technology and easy adaptation in other countries as compared to that in these countries might have been the cause for the same. Also, we can see that the bottom most countries are the ones that are still developing ones and have less technological support available for helping them out through the medical situations. Thus, we can say that technological development does play an important role for helping us humans to survive more. 
-#```{r, fig.show='animate', echo=FALSE}
+```{r, fig.show='animate', echo=FALSE}
 
 
 my <- Data_country_years %>%
@@ -262,6 +262,15 @@ Combining the trends for all countries we now show the plots for the values of H
 3- For Males
 
 Although we get the same insight as from the above graphs and that from looking at the legends that the overall HALE values for females is larger globally. We cannot compare the values countrywise here as there scales are continous and the ranges for both of them being different it is very hard to guage the difference in the values for each of those.
+
+On looking up for what might be the reasons for females having higher HALE than male and referring to various articles, these were the reasons that might be the ones resulting into such results:
+
+1- The female advantage in life expectancy is partly, but not entirely driven by higher chances of surviving childhood.
+
+2- Biological differences can also be part of the story. 
+  The evidence shows that differences in chromosomes and hormones between men and women affect longevity. For example, males tend to have more fat surrounding the organs (they have more ‘visceral fat’) whereas women tend to have more fat sitting directly under the skin (‘subcutaneous fat’). This difference is determined both by estrogen and the presence of the second X chromosome in females; and it matters for longevity because fat surrounding the organs predicts cardiovascular disease
+  
+3- 
 ```{r, echo=FALSE, message=FALSE, warning=FALSE, comment=FALSE, echo=FALSE}
 g <- list(
   showframe = FALSE,
@@ -354,7 +363,7 @@ Folowing graph show the change in HALE over different countries throughout the y
 
 ```{r ch1unk-label, include=FALSE , message=FALSE, warning=FALSE, comment=FALSE}
 
-datalow <- Data_country_years %>% rename(region= location, value = val) %>% 
+datalow <- Data_country_years %>% dplyr::rename(region= location, value = val) %>% 
   mutate(region = tolower(region)) %>%
   mutate(region = recode(region,"united states"    = "united states of america", "russian federation"="russia","congo"= "republic of congo", "tanzania" = "united republic of tanzania", "serbia" = "republic of serbia"))
 

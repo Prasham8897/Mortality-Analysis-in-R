@@ -183,8 +183,9 @@ In all the age groups, the average number of deaths due to self-harm and interpe
 Following is a mosaic plot that gives the information of the same data in relative fashion. Here, we do not know the actual values by observing the plot alone. So, bar graph using plotly seem to be a better option than mosaic plots.  
 </p>
 ```{r, echo=FALSE, fig.width=12, fig.height=8}
+library(dplyr)
 
-data_injuries4 <- data_injuries3 %>% select(age, cause, val_mean)
+data_injuries4 <- data_injuries3 %>% dplyr::select(age, cause, val_mean)
 data_injuries4$val_mean <- as.integer(data_injuries4$val_mean) 
 colnames(data_injuries4) <- c("age", "cause", "Freq")
 
@@ -242,7 +243,7 @@ Again, following is the mosaic plot that gives us the information about the data
 
 ```{r, fig.width=12, fig.height=8, echo=FALSE}
 
-data_comm_b <- data_comm_a %>% select(age, cause, val_mean)
+data_comm_b <- data_comm_a %>% dplyr::select(age, cause, val_mean)
 data_comm_b$val_mean <- as.integer(data_comm_b$val_mean) 
 colnames(data_comm_b) <- c("age", "cause", "Freq")
 
@@ -316,7 +317,7 @@ It can also be observed from the graph that the average number of deaths in male
 
 ```{r, echo=FALSE}
 
-death_numbers_2 <- death_numbers_2 %>% select(age, sex, val_mean)
+death_numbers_2 <- death_numbers_2 %>% dplyr::select(age, sex, val_mean)
 death_numbers_2$val_mean <- as.integer(death_numbers_2$val_mean) 
 colnames(death_numbers_2) <- c("age", "sex", "Freq")
 

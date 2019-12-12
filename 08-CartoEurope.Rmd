@@ -1,3 +1,5 @@
+# Animation
+
 
 ```{r, include=FALSE}
 library(ggplot2)
@@ -200,7 +202,7 @@ Nevertheless, lets go on and build our plots for some interesting spatial analys
 
 choropleth_data <- tidyr::gather(new_data, Year, value, -c("Index", "sov_a3", "Variant", "Region, subregion, country or area *", "Notes", "Country code", "Type", "Parent code"))
 
-data_low <- choropleth_data %>% rename(region = `Region, subregion, country or area *`) %>% 
+data_low <- choropleth_data %>% dplyr::rename(region = `Region, subregion, country or area *`) %>% 
   dplyr::mutate(region = tolower(region))
 
 choropleths_death = list()
@@ -229,7 +231,7 @@ country_choropleth(data_2010_2015, title = "Choropleth: Number of Deaths between
 
 ```{r cartogram, echo=FALSE, comment=NA, message=FALSE, warning=FALSE}
 world_map = world_map %>% 
-  select(sov_a3) %>%  
+  dplyr::select(sov_a3) %>%  
   st_transform(world_map, crs = "+proj=robin")
 
 #if(!dir.exists("data")) dir.create("data")
@@ -239,8 +241,8 @@ world_map = world_map %>%
 cols_data <- c("Index", "Variant", "Region, subregion, country or area *", "Notes", "Country code", "Type", "Parent code")
 
 world_data = left_join(world_map, new_data, by = "sov_a3") %>% 
-  select(-cols_data) %>% 
-  gather(key = "year", value = "deaths", c("1990-1995", "1995-2000", "2000-2005", "2005-2010", "2010-2015", "2015-2020"))
+  dplyr::select(-cols_data) %>% 
+  tidyr::gather(key = "year", value = "deaths", c("1990-1995", "1995-2000", "2000-2005", "2005-2010", "2010-2015", "2015-2020"))
 
 world_data <- world_data[,-c(2:9)]
 
@@ -267,7 +269,7 @@ world_data_carto = world_data %>%
 ```
 
 ```{r, echo=FALSE, comment=NA, message=FALSE, warning=FALSE}
-library(magick)
+# library(magick)
 
 carto_anim = tm_shape(world_data_carto) +
   tm_polygons("deaths", title = "Deaths: ") +

@@ -4,11 +4,11 @@
 
   <meta charset="utf-8" />
   <meta http-equiv="X-UA-Compatible" content="IE=edge" />
-  <title>Mortality Analysis</title>
-  <meta name="description" content="Mortality Analysis" />
+  <title>3 Missing Data | Mortality Analysis</title>
+  <meta name="description" content="3 Missing Data | Mortality Analysis" />
   <meta name="generator" content="bookdown 0.16 and GitBook 2.6.7" />
 
-  <meta property="og:title" content="Mortality Analysis" />
+  <meta property="og:title" content="3 Missing Data | Mortality Analysis" />
   <meta property="og:type" content="book" />
   
   
@@ -16,7 +16,7 @@
   
 
   <meta name="twitter:card" content="summary" />
-  <meta name="twitter:title" content="Mortality Analysis" />
+  <meta name="twitter:title" content="3 Missing Data | Mortality Analysis" />
   
   
   
@@ -31,8 +31,8 @@
   <meta name="apple-mobile-web-app-status-bar-style" content="black" />
   
   
-
-<link rel="next" href="data-and-information-sources.html"/>
+<link rel="prev" href="data-and-information-sources.html"/>
+<link rel="next" href="cause-vs-age-sex.html"/>
 <script src="libs/jquery-2.2.3/jquery.min.js"></script>
 <link href="libs/gitbook-2.6.7/css/style.css" rel="stylesheet" />
 <link href="libs/gitbook-2.6.7/css/plugin-table.css" rel="stylesheet" />
@@ -102,55 +102,17 @@
           <div class="page-inner">
 
             <section class="normal" id="section-">
-<div id="header">
-<h1 class="title">Mortality Analysis</h1>
-<p class="author"><em>Pritam Biswas | Manas Dresswala | Prasham Sheth | Swarna Bharati Mantena</em></p>
-<p class="date"><em>2019-12-12</em></p>
-</div>
-<div id="introduction" class="section level1">
-<h1 number="1"><span class="header-section-number">1</span> Introduction</h1>
-<h1>
-DO YOU KNOW?
-</h1>
-<p>
-<p>The death rate is 7.7 deaths/1,000 population (2018 est.) on average across the world. This rate results in about 108 worldwide deaths per minute or 1.8 deaths every second.<br />
-</p>
-Bulgaria has the highest death rate of 15.3 deaths/1,000 population and Qatar has the least death rate of 1.53 deaths/1,000 population.
-</p>
-<h2>
-Does this little information bring up questions in your head?
-</h2>
-<h2>
-YES?
-</h2>
-<p>
-<p>It did for us too. These are some of the questions that we came up with:<br />
-What about the other countries? How many people die there on average?<br />
-How does the number of deaths vary across different countries?
-Do we see any pattern among deaths between developed and under-developed/developing countries?
-What are the main causes of death? What are the statistics corresponding to this?<br />
-What about child mortality? How are the statistics in case of childeren (aged less than 5 years)?
-How do the statistics vary in different age groups and on sex?</p>
-With a bunch of these questions that are quite interesting, we decided that this would be our project.
-</p>
-<h1>
-WHAT DO WE WANT TO DO?
-</h1>
-<p>We picked the three most interesting questions that struck our minds when we started exploring the data on this topic.</p>
-<h2>
-The three interesting questions!
-</h2>
-<p>
-<ol style="list-style-type: lower-alpha">
-<li><p>Understand the child mortality accross the countries in the world. Is the child mortality count coming down? If yes, why did that happen?<br />
-</p></li>
-<li><p>We know that in today’s world there has been a tremendous advancement in healthcare. Does the life expectancy of a human increase now? Did the number of deaths actually come down because of that? Or is there any other reason for the mortality rate of a country?<br />
-</p></li>
-<li><p>Lastly, we would like to understand the mortality rates of people of different ages. Is there some difference in the causes of death? Are there any patterns here? Are there some differences in the causes of death when compared location wise?<br />
-</p></li>
-</ol>
-Let us now get to other sections of this book that will help you understand better how we proceeded on working on this project.
-</p>
+<div id="missing-data" class="section level1">
+<h1 number="3"><span class="header-section-number">3</span> Missing Data</h1>
+<p>I was reading this book - Enlightenment Now by Steven Pinker and came across this chapter on Health and mortality throughout the world. It had pretty interesting graphs depicting that the overall health of the world is becoming better and the people are living for a longer period of time.</p>
+<p>While working on this project, I opened this book again and read all the sources given under the graphs. I came across this website here - <a href="http://mortality.org" class="uri">http://mortality.org</a> and decided to use the data given here for understanding the number of deaths throughout the world.</p>
+<p>There were two main issues we faced here, firstly the data was not in one file, but it was spread across different text files. Each document had data about only one country. So we had to read the files seperately and then combine them into one database. Another issue was that we got data for only 41 countries here. Nevertheless we realised that this was good enough data to work with.</p>
+<p>Before we start working on the data we had to do a lot of data cleaning as mentioned earlier.
+After we parsed each file separately and combined it into one data, we also plotted a graph to do some missing data analysis.</p>
+<p>We realised that we have data on 41 countries acorss 268 years, but all the countries did not have data for all the years.</p>
+<p><img src="finalproj_files/figure-html/unnamed-chunk-2-1.png" width="672" /><img src="finalproj_files/figure-html/unnamed-chunk-2-2.png" width="672" /><img src="finalproj_files/figure-html/unnamed-chunk-2-3.png" width="672" /></p>
+<p>We can clearly see in the above graphs that most of the data relating to the countries is actually missing.</p>
+<p>One pattern that we noticed here is that there is more data on developed countries like the European countries, in comparison to the still developing countries.</p>
 
 </div>
             </section>
@@ -158,8 +120,8 @@ Let us now get to other sections of this book that will help you understand bett
           </div>
         </div>
       </div>
-
-<a href="data-and-information-sources.html" class="navigation navigation-next navigation-unique" aria-label="Next page"><i class="fa fa-angle-right"></i></a>
+<a href="data-and-information-sources.html" class="navigation navigation-prev " aria-label="Previous page"><i class="fa fa-angle-left"></i></a>
+<a href="cause-vs-age-sex.html" class="navigation navigation-next " aria-label="Next page"><i class="fa fa-angle-right"></i></a>
     </div>
   </div>
 <script src="libs/gitbook-2.6.7/js/app.min.js"></script>
@@ -190,7 +152,7 @@ gitbook.start({
 "size": 2
 },
 "edit": {
-"link": "https://github.com/Prasham8897/Mortality-Analysis/edit/master/index.Rmd",
+"link": "https://github.com/Prasham8897/Mortality-Analysis/edit/master/04-MissingData.Rmd",
 "text": "Edit"
 },
 "history": {
@@ -198,7 +160,7 @@ gitbook.start({
 "text": null
 },
 "view": {
-"link": "https://github.com/Prasham8897/Mortality-Analysis/blob/master/index.Rmd",
+"link": "https://github.com/Prasham8897/Mortality-Analysis/blob/master/04-MissingData.Rmd",
 "text": null
 },
 "download": null,
