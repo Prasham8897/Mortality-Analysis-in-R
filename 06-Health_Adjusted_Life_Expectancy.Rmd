@@ -105,7 +105,7 @@ After rank ordering the countries by the HALE values, we selected to create an a
 
 As we can see from them Japan and Singapore are 2 the places which have maintained their top positions. Andora, Sweden and Iceland inspite of increasing their respective values for HALE drop down in the positions. We think, availibility of better medical facilities along with the development in technology and easy adaptation in other countries as compared to that in these countries might have been the cause for the same. Also, we can see that the bottom most countries are the ones that are still developing ones and have less technological support available for helping them out through the medical situations. Thus, we can say that technological development does play an important role for helping us humans to survive more. 
 </p>
-```{r, fig.show='animate', echo=FALSE}
+```{r, fig.show='animate', echo=FALSE,  message=FALSE, warning=FALSE, comment=NA}
 
 
 my <- Data_country_years %>%
@@ -165,15 +165,15 @@ staticplot = ggplot(my, aes(rank, group = location,
 anim = staticplot + transition_states(year, transition_length = 4, state_length = 1) +
   view_follow(fixed_x = TRUE)  +
   labs(title = 'HALE per Year : {closest_state}',  
-       subtitle  =  "Top 10 Countries")
+       subtitle  =  "Top 10 and Bottom 10 Countries")
 
-animate(anim, 200, fps = 5,  width = 1200, height = 1000,renderer = ffmpeg_renderer())
+animate(anim, 200, fps = 5,  width = 800, height = 800, renderer = ffmpeg_renderer())
 
 ```
 <p.
 The below graph extends the above one in the sense that it has 40 countries into consideration (Top20 and bottom 20 when ranked based on the HALE values) The still graph with these many countries helps us see the fact that there is wide gap of 15 years when shifting from the 20th country from top to 20th country from bottom. 15 years! A big gap it is for sure...
 </p>
-```{r, fig.height= 12, fig.width=14, echo=FALSE}
+```{r, fig.height= 12, fig.width=14, echo=FALSE,  message=FALSE, warning=FALSE, comment=NA}
 Data <- Data_country_years %>% filter(year== 2017)
 
 
@@ -232,7 +232,7 @@ Now, let's shift gears towards analyzing the HALE values for different genders o
 We need to study the different aspects for understanding why the pattern exists and get the answer to the question "Why do women live longer than men?"
 </p>
 
-```{r, echo=FALSE}
+```{r,echo=FALSE,  message=FALSE, warning=FALSE, comment=NA}
 
 plot_ly(Data_2017, x = ~val, y = ~reorder(location,val),
         color = ~sex) %>%
@@ -243,7 +243,7 @@ plot_ly(Data_2017, x = ~val, y = ~reorder(location,val),
 <p>
 From the below drawn line and barcharts also it is a clear trend that the HALE values for females have been higher than the ones for males since 1990s and the trend has remained the same over the period of years.
 </p>
-```{r, width=10, echo=FALSE}
+```{r, width=10, echo=FALSE,  message=FALSE, warning=FALSE, comment=NA}
 
 ggplotly(ggplot(Data_global_years, aes(year, val, color=sex)) + 
     geom_line() +
@@ -289,7 +289,7 @@ The proof is restricted and we just have fractional answers. We realize that nat
 </p>
 
 
-```{r, echo=FALSE, message=FALSE, warning=FALSE, comment=FALSE, echo=FALSE}
+```{r, echo=FALSE, message=FALSE, warning=FALSE, comment=NA, echo=FALSE}
 g <- list(
   showframe = FALSE,
   showcoastlines = FALSE,
@@ -350,7 +350,7 @@ The trend guages from these can be summarized as below. \
 
 
 
-```{r echo=FALSE, fig.height=12}
+```{r echo=FALSE, fig.height=12,echo=FALSE,  message=FALSE, warning=FALSE, comment=NA}
 
 d1<- Data_country_years[Data_country_years$location == "United States" ,]
 d2<- Data_country_years[Data_country_years$location == "India" ,]
@@ -368,7 +368,7 @@ ggplotly(ggplot(d, aes(year, val)) +
 
 ```
 
-```{r echo=FALSE}
+```{r echo=FALSE, echo=FALSE,  message=FALSE, warning=FALSE, comment=NA}
 ggplotly(ggplot(d1, aes(year, val)) + 
     geom_line() +
     ggtitle("Health Adjusted Life Expectancy") +
