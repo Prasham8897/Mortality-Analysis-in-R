@@ -18,22 +18,22 @@
         stroke: #888;
         stroke-width: 2px;
       }
-      
+
       .fill {
         fill: #fff;
       }
-      
+
       .graticule {
         fill: none;
         stroke: #777;
         stroke-width: .5px;
         stroke-opacity: .5;
       }
-      
+
       .land {
         fill: #222;
       }
-      
+
       .boundary {
         fill: none;
         stroke: #fff;
@@ -58,7 +58,7 @@
 
 <body>
 
-  <div id="wrapper">  
+  <div id="wrapper">
       <div id="map"></div>
       <button id="play">play</button>
       <span id="clock">year</span>
@@ -77,10 +77,10 @@
 
 
 
-<script src="http://d3js.org/d3.v3.min.js"></script>
-<script src="http://d3js.org/d3.geo.projection.v0.min.js"></script>
-<script src="http://d3js.org/queue.v1.min.js"></script>
-<script src="http://d3js.org/topojson.v1.min.js"></script>
+<script src="https://d3js.org/d3.v3.min.js"></script>
+<script src="https://d3js.org/d3.geo.projection.v0.min.js"></script>
+<script src="https://d3js.org/queue.v1.min.js"></script>
+<script src="https://d3js.org/topojson.v1.min.js"></script>
 <script>
   //globals
 var width, height, projection, path, graticule, svg, attributeArray = [], currentAttribute = 0, playing = false;
@@ -89,7 +89,7 @@ function init() {
   setMap();
   animateMap();
 
-  
+
 
 
 
@@ -97,7 +97,7 @@ function init() {
 
 function setMap() {
 
-  width = 960, height = 580;  // map width and height, matches 
+  width = 960, height = 580;  // map width and height, matches
 
   projection = d3.geo.eckert5()   // define our projection with parameters
     .scale(170)
@@ -133,7 +133,7 @@ function setMap() {
 
 function loadData() {
 
-  queue()   // queue function loads all external data files asynchronously 
+  queue()   // queue function loads all external data files asynchronously
     .defer(d3.json, "https://raw.githubusercontent.com/biswaspritam/edav_repo/master/world-topo.json")  // our geometries
     .defer(d3.csv, "https://raw.githubusercontent.com/biswaspritam/edav_repo/master/mortality_d3_data.csv")
     //https://raw.githubusercontent.com/biswaspritam/edav_repo/master/countriesRandom.csv
@@ -153,14 +153,14 @@ function processData(error,world,countryData) {
       if(countries[i].properties.id == countryData[j].id) {   // if they match
         for(var k in countryData[i]) {   // for each column in the a row within the CSV
           if(k != 'name' && k != 'id') {  // let's not add the name or id as props since we already have them
-            if(attributeArray.indexOf(k) == -1) { 
+            if(attributeArray.indexOf(k) == -1) {
                attributeArray.push(k);  // add new column headings to our array for later
             }
             console.log(i);
             console.log(k);
             console.log(j);
             countries[i].properties[k] = Number(countryData[j][k]*100000)  // add each CSV column key/value to geometry object
-          } 
+          }
         }
         break;  // stop looking through the CSV since we made our match
       }
@@ -233,7 +233,7 @@ function getDataRange() {
   // function loops through all the data values from the current data attribute
   // and returns the min and max values
 
-  var min = Infinity, max = -Infinity;  
+  var min = Infinity, max = -Infinity;
   d3.selectAll('.country')
     .each(function(d,i) {
       var currentValue = d.properties[attributeArray[currentAttribute]];
@@ -250,19 +250,19 @@ function getDataRange() {
 function animateMap() {
 
   var timer;  // create timer object
-  d3.select('#play')  
+  d3.select('#play')
     .on('click', function() {  // when user clicks the play button
       if(playing == false) {  // if the map is currently playing
         timer = setInterval(function(){   // set a JS interval
-          if(currentAttribute < attributeArray.length-1) {  
+          if(currentAttribute < attributeArray.length-1) {
               currentAttribute +=1;  // increment the current attribute counter
           } else {
               currentAttribute = 0;  // or reset it to zero
           }
-          sequenceMap();  // update the representation of the map 
+          sequenceMap();  // update the representation of the map
           d3.select('#clock').html(attributeArray[currentAttribute]);  // update the clock
         }, 200);
-      
+
         d3.select(this).html('stop');  // change the button label to stop
         playing = true;   // change the status of the animation
       } else {    // else if is currently playing
@@ -275,7 +275,7 @@ function animateMap() {
 
 
 window.onload = init();  // magic starts here
-  
+
 </script>
 </body>
 </html>

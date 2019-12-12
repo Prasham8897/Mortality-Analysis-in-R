@@ -1,4 +1,4 @@
-# Animation
+# Mortality Rate (Number of Deaths) Analysis
 
 
 ```{r, include=FALSE}
