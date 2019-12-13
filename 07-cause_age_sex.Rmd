@@ -18,7 +18,6 @@ As the ages were grouped this way in the actual dataset source, we preferred to 
 The plots and information stated corresponds to data collectced from the year 1990 to 2016. Also, wherever average is mentioned, it is an average taken per annum from 1990 to 2017. 
 </p>
 
-<h3>Reading data and forming dataframes</h3>
 ```{r, echo=FALSE}
 ###CODE TO READ DATA FROM THE FILES
 #reading csv files into a dataframes and
