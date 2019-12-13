@@ -18,7 +18,7 @@ library(choroplethr)
 ```
 <h3>Introduction: </h3>
 <p>
-We want to see how the mortality rate of children varies over the course of history during the last 60-70 years. We are particularly selecting  deaths of children who were born alive but died under the age of 5. During our analysis we notice some spatial and temporal patterns. Our major focus is on the countries in  Africa and Asia, sicne these countries have witnessed numerous national-scale events during the last few decades. The datasets for the below plots have been collecte using this tool: http://ghdx.healthdata.org/gbd-results-tool
+We want to see how the mortality rate of children varies over the course of history during the last 60-70 years. We are particularly selecting  deaths of children who were born alive but died under the age of 5. During our analysis we notice some spatial and temporal patterns. Our major focus is on the countries in  Africa and Asia, since these countries have witnessed numerous national-scale events during the last few decades. The datasets for the below plots have been collected using this tool: http://ghdx.healthdata.org/gbd-results-tool
   </p>
 ```{r, fig.width=8, fig.height=8, comment = NA, echo=FALSE, message = FALSE, warning = FALSE}
 countries <- c("Africa", "Asia", "World", "Northern America", "Europe")
