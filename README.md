@@ -11,4 +11,4 @@ https://prasham8897.github.io/Mortality-Analysis/
 Details about the sources of data are mentioned in the bookdown. 
 
 #### CONTRIBUTORS
-Pritam Biswas | Manas Dresswala | Prasham Sheth | Swarna Bharati Mantena
+Prasham Sheth | Pritam Biswas | Manas Dresswala | Swarna Bharati Mantena
