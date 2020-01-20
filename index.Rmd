@@ -1,6 +1,6 @@
 --- 
 title: "Mortality Analysis"
-author: "Pritam Biswas | Manas Dresswala | Prasham Sheth | Swarna Bharati Mantena"
+author: "Prasham Sheth | Pritam Biswas | Manas Dresswala | Swarna Bharati Mantena"
 date: "`r Sys.Date()`"
 site: bookdown::bookdown_site
 ---
