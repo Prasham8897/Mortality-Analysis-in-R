@@ -5,8 +5,7 @@ The project aims at answering three most intersting questions related to mortali
 Our journey through the project was interesting as we observed a few results that were pretty surprising, although there were a couple of results that were as expected. We hope you find the work and results to be interesting too. 
 
 All the work done is rendered to a neat and simple bookdown. Do check the work by clicking on the link below!
-https://prasham8897.github.io/Mortality-Analysis/
-
+https://prasham8897.github.io/Mortality-Analysis-in-R/
 
 Details about the sources of data are mentioned in the bookdown. 
 
